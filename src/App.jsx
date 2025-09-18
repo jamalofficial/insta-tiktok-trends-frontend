@@ -34,7 +34,7 @@ function App() {
             }
           />
 
-          <Route
+          {/* <Route
             path="/keywords"
             element={
               <ProtectedRoute>
@@ -43,7 +43,7 @@ function App() {
                 </Layout>
               </ProtectedRoute>
             }
-          />
+          /> */}
 
           <Route
             path="/users"
@@ -56,7 +56,7 @@ function App() {
             }
           />
 
-          <Route
+          {/* <Route
             path="/search-topics"
             element={
               <ProtectedRoute>
@@ -65,7 +65,7 @@ function App() {
                 </Layout>
               </ProtectedRoute>
             }
-          />
+          /> */}
 
           <Route
             path="/explore-topics"
@@ -78,7 +78,7 @@ function App() {
             }
           />
 
-          <Route
+          {/* <Route
             path="/help"
             element={
               <ProtectedRoute>
@@ -87,7 +87,7 @@ function App() {
                 </Layout>
               </ProtectedRoute>
             }
-          />
+          /> */}
 
           {/* Catch all route */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />

@@ -21,18 +21,18 @@ const navigation = [
     icon: LayoutDashboard,
     roles: ["super_admin", "admin", "editor", "viewer"],
   },
-  {
-    name: "Keywords",
-    href: "/keywords",
-    icon: Hash,
-    roles: ["super_admin", "admin", "editor", "viewer"],
-  },
-  {
-    name: "Search Topics",
-    href: "/search-topics",
-    icon: Search,
-    roles: ["super_admin", "admin", "editor", "viewer"],
-  },
+  // {
+  //   name: "Keywords",
+  //   href: "/keywords",
+  //   icon: Hash,
+  //   roles: ["super_admin", "admin", "editor", "viewer"],
+  // },
+  // {
+  //   name: "Search Topics",
+  //   href: "/search-topics",
+  //   icon: Search,
+  //   roles: ["super_admin", "admin", "editor", "viewer"],
+  // },
   {
     name: "Explore Topics",
     href: "/explore-topics",
@@ -45,12 +45,12 @@ const navigation = [
     icon: Users,
     roles: ["super_admin", "admin"],
   },
-  {
-    name: "Help & Support",
-    href: "/help",
-    icon: HelpCircle,
-    roles: ["super_admin", "admin", "editor", "viewer"],
-  },
+  // {
+  //   name: "Help & Support",
+  //   href: "/help",
+  //   icon: HelpCircle,
+  //   roles: ["super_admin", "admin", "editor", "viewer"],
+  // },
 ];
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen }) {

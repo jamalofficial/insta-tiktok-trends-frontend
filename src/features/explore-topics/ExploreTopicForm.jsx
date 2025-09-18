@@ -8,9 +8,9 @@ import { exploreService } from "../../shared/services/explore.js";
 
 const exploreTopicSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
-  category: z.string().optional(),
-  popularity: z.number().min(0).optional(),
+  // description: z.string().optional(),
+  // category: z.string().optional(),
+  // popularity: z.number().min(0).optional(),
 });
 
 export default function ExploreTopicForm({ topic, mode, onSave, onCancel }) {
@@ -27,9 +27,9 @@ export default function ExploreTopicForm({ topic, mode, onSave, onCancel }) {
     resolver: zodResolver(exploreTopicSchema),
     defaultValues: {
       title: topic?.title || "",
-      description: topic?.description || "",
-      category: topic?.category || "",
-      popularity: topic?.popularity || 0,
+      // description: topic?.description || "",
+      // category: topic?.category || "",
+      // popularity: topic?.popularity || 0,
     },
   });
 
@@ -37,9 +37,9 @@ export default function ExploreTopicForm({ topic, mode, onSave, onCancel }) {
     if (topic) {
       reset({
         title: topic.title,
-        description: topic.description || "",
-        category: topic.category || "",
-        popularity: topic.popularity || 0,
+        // description: topic.description || "",
+        // category: topic.category || "",
+        // popularity: topic.popularity || 0,
       });
     }
   }, [topic, reset]);
@@ -88,7 +88,7 @@ export default function ExploreTopicForm({ topic, mode, onSave, onCancel }) {
         )}
       </div>
 
-      <div>
+      {/* <div>
         <label
           htmlFor="description"
           className="block text-sm font-medium text-gray-700"
@@ -148,7 +148,7 @@ export default function ExploreTopicForm({ topic, mode, onSave, onCancel }) {
             {errors.popularity.message}
           </p>
         )}
-      </div>
+      </div> */}
 
       {!isReadOnly && (
         <div className="flex justify-end space-x-3 pt-4">

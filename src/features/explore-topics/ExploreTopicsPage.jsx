@@ -7,7 +7,7 @@ import Table from "../../shared/components/Table.jsx";
 import Button from "../../shared/components/Button.jsx";
 import Modal from "../../shared/components/Modal.jsx";
 import ExploreTopicForm from "./ExploreTopicForm.jsx";
-import { Plus, Edit, Trash2, Eye, Search, ArrowLeft } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, Search, ArrowLeft, Compass } from "lucide-react";
 
 export default function ExploreTopicsPage() {
   const [topics, setTopics] = useState([]);
@@ -18,12 +18,9 @@ export default function ExploreTopicsPage() {
   const [sortBy, setSortBy] = useState("popularity");
   const [page, setPage] = useState(0);
   const [limit] = useState(20);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { loading, error, execute } = useApiState();
 
-  useEffect(() => {
-    fetchTopics();
-  }, [page, sortBy, searchQuery]);
 
   const fetchTopics = async () => {
     try {
@@ -45,6 +42,10 @@ export default function ExploreTopicsPage() {
       console.error("Failed to fetch explore topics:", err);
     }
   };
+  
+  useEffect(() => {
+    fetchTopics();
+  }, [page, sortBy, searchQuery]);
 
   const handleCreate = () => {
     setSelectedTopic(null);
@@ -92,9 +93,15 @@ export default function ExploreTopicsPage() {
     fetchTopics();
   };
 
+  const handleExplore = (topic) => {
+    console.log(topic);
+    const url = `https://www.tiktok.com/csi/search?keyword=${topic.title}`;
+    window.open(url, '_blank');
+  }
+
   const columns = [
     {
-      header: "Title",
+      header: "Topic",
       accessor: "title",
       render: (topic) => (
         <div>
@@ -108,22 +115,22 @@ export default function ExploreTopicsPage() {
       ),
       className: "w-1/3",
     },
-    {
-      header: "Category",
-      accessor: "category",
-      render: (topic) => topic.category || "N/A",
-      className: "w-1/4",
-    },
-    {
-      header: "Popularity",
-      accessor: "popularity",
-      render: (topic) => (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-          {topic.popularity || 0}
-        </span>
-      ),
-      className: "w-1/6",
-    },
+    // {
+    //   header: "Category",
+    //   accessor: "category",
+    //   render: (topic) => topic.category || "N/A",
+    //   className: "w-1/4",
+    // },
+    // {
+    //   header: "Popularity",
+    //   accessor: "popularity",
+    //   render: (topic) => (
+    //     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+    //       {topic.popularity || 0}
+    //     </span>
+    //   ),
+    //   className: "w-1/6",
+    // },
     {
       header: "Created",
       accessor: "created_at",
@@ -135,6 +142,13 @@ export default function ExploreTopicsPage() {
       accessor: "id",
       render: (topic) => (
         <div className="flex space-x-2">
+          <button
+            onClick={() => handleExplore(topic)}
+            className="text-green-600 hover:text-green-900"
+            title="Explore"
+          >
+            <Compass className="h-4 w-4" />
+          </button>
           <button
             onClick={() => handleView(topic)}
             className="text-blue-600 hover:text-blue-900"
@@ -219,7 +233,7 @@ export default function ExploreTopicsPage() {
               onChange={(e) => setSortBy(e.target.value)}
               className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value="popularity">Sort by Popularity</option>
+              {/* <option value="popularity">Sort by Popularity</option> */}
               <option value="title">Sort by Title</option>
               <option value="created_at">Sort by Date</option>
             </select>

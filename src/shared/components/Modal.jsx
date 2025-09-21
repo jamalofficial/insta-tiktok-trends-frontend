@@ -1,86 +1,96 @@
-import { Fragment } from "react";
-import { Dialog, Transition } from "@headlessui/react";
-import { X } from "lucide-react";
-import Button from "./Button.jsx";
+import React, { useEffect } from "react";
+import Button from "./Button";
 
-export default function Modal({
+const Modal = ({
   isOpen,
   onClose,
   title,
   children,
-  size = "md",
+  size = "medium",
   showCloseButton = true,
-  closeOnOverlayClick = true,
-}) {
+  className = "",
+}) => {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
   const sizeClasses = {
-    sm: "max-w-md",
-    md: "max-w-lg",
-    lg: "max-w-2xl",
+    small: "max-w-md",
+    medium: "max-w-lg",
+    large: "max-w-2xl",
     xl: "max-w-4xl",
-    "2xl": "max-w-6xl",
+    full: "max-w-7xl",
   };
 
   return (
-    <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog
-        as="div"
-        className="relative z-50"
-        onClose={closeOnOverlayClick ? onClose : () => {}}
-      >
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="flex min-h-screen items-center justify-center p-4">
+        {/* Backdrop */}
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+          onClick={onClose}
+        />
+
+        {/* Modal */}
+        <div
+          className={`relative w-full ${sizeClasses[size]} transform rounded-lg bg-white shadow-xl transition-all ${className}`}
         >
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-        </Transition.Child>
+          {/* Header */}
+          {(title || showCloseButton) && (
+            <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+              {title && (
+                <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+              )}
+              {showCloseButton && (
+                <button
+                  onClick={onClose}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              )}
+            </div>
+          )}
 
-        <div className="fixed inset-0 z-10 overflow-y-auto">
-          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-              enterTo="opacity-100 translate-y-0 sm:scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-              leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            >
-              <Dialog.Panel
-                className={`relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full ${sizeClasses[size]}`}
-              >
-                {title && (
-                  <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                    <div className="flex items-center justify-between">
-                      <Dialog.Title
-                        as="h3"
-                        className="text-lg font-semibold leading-6 text-gray-900"
-                      >
-                        {title}
-                      </Dialog.Title>
-                      {showCloseButton && (
-                        <button
-                          type="button"
-                          className="text-gray-400 hover:text-gray-600"
-                          onClick={onClose}
-                        >
-                          <X className="h-6 w-6" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                <div className="px-4 pb-4 sm:p-6">{children}</div>
-              </Dialog.Panel>
-            </Transition.Child>
-          </div>
+          {/* Content */}
+          <div className="px-6 py-4">{children}</div>
         </div>
-      </Dialog>
-    </Transition.Root>
+      </div>
+    </div>
   );
-}
+};
+
+export default Modal;

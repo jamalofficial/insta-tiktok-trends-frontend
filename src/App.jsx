@@ -1,98 +1,106 @@
+import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
-import { AuthProvider } from "./shared/hooks/useAuth.jsx";
-import ProtectedRoute from "./features/auth/ProtectedRoute.jsx";
-import Layout from "./shared/components/Layout.jsx";
-import LoginPage from "./features/auth/LoginPage.jsx";
-import DashboardPage from "./features/dashboard/DashboardPage.jsx";
-import KeywordsPage from "./features/keywords/KeywordsPage.jsx";
-import UsersPage from "./features/users/UsersPage.jsx";
-import SearchTopicsPage from "./features/search-topics/SearchTopicsPage.jsx";
-import ExploreTopicsPage from "./features/explore-topics/ExploreTopicsPage.jsx";
-import HelpSupportPage from "./features/help-support/HelpSupportPage.jsx";
+import { AuthProvider } from "./shared/contexts/AuthContextProvider";
+import { AlertProvider } from "./shared/components/AlertProvider";
+import AuthGuard from "./features/auth/components/AuthGuard";
+import ProtectedRoute from "./features/auth/components/ProtectedRoute";
+import LoginPage from "./features/auth/pages/LoginPage";
+import RegisterPage from "./features/auth/pages/RegisterPage";
+import Dashboard from "./features/dashboard/pages/Dashboard";
+import HomePage from "./features/dashboard/pages/HomePage";
+import TopicsPage from "./features/topics/pages/TopicsPage";
+import AnalyticsPage from "./features/analytics/pages/AnalyticsPage";
+import ProfilePage from "./features/profile/pages/ProfilePage";
+import SettingsPage from "./features/settings/pages/SettingsPage";
+import TopicResultsPage from "./features/topics/pages/TopicResultsPage";
 
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <AlertProvider>
+        <Router>
+          <Routes>
+            {/* Public routes - redirect to dashboard if authenticated */}
+            <Route
+              path="/login"
+              element={
+                <AuthGuard>
+                  <LoginPage />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <AuthGuard>
+                  <RegisterPage />
+                </AuthGuard>
+              }
+            />
 
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <DashboardPage />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
+            {/* Protected routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/topics"
+              element={
+                <ProtectedRoute>
+                  <TopicsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/analytics"
+              element={
+                <ProtectedRoute>
+                  <AnalyticsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <SettingsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/topics/:topicId/results"
+              element={
+                <ProtectedRoute>
+                  <TopicResultsPage />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/keywords"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <KeywordsPage />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
+            {/* Home page */}
+            <Route path="/" element={<HomePage />} />
 
-          <Route
-            path="/users"
-            element={
-              <ProtectedRoute requiredRole="admin">
-                <Layout>
-                  <UsersPage />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/search-topics"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <SearchTopicsPage />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/explore-topics"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <ExploreTopicsPage />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/help"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <HelpSupportPage />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Catch all route */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </Router>
+            {/* Catch all - redirect to dashboard */}
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </Router>
+      </AlertProvider>
     </AuthProvider>
   );
 }

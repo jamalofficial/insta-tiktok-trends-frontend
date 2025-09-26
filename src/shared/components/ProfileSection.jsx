@@ -17,10 +17,10 @@ const ProfileSection = ({ onLogout }) => {
     setIsProfileOpen(false);
   };
 
-  const handleSettingsClick = () => {
-    navigate("/settings");
-    setIsProfileOpen(false);
-  };
+  // const handleSettingsClick = () => {
+  //   navigate("/settings");
+  //   setIsProfileOpen(false);
+  // };
 
   return (
     <div className="relative flex-shrink-0">

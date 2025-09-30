@@ -3,6 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { topicsService } from "../../../shared/services/topicsService";
 import SkeletonLoader from "../../../shared/components/SkeletonLoader";
 import LoadingSpinner from "../../../shared/components/LoadingSpinner";
+import { Plus } from "lucide-react";
+import { EyeIcon } from "lucide-react";
+import { Trash2Icon } from "lucide-react";
+import { CompassIcon } from "lucide-react";
+import { TelescopeIcon } from "lucide-react";
+import { ViewIcon } from "lucide-react";
+import { Search } from "lucide-react";
 
 const TopicsList = () => {
   const navigate = useNavigate();
@@ -118,6 +125,18 @@ const TopicsList = () => {
     navigate(`/topics/${topic.id}/results`);
   };
 
+  const handleExploreTopic = (topic) => {
+    const tab = window.open(`https://www.tiktok.com/csi/search?keyword=${topic.topic}#explore=1`, '_blank');
+    if (tab) {
+      tab.focus();
+      const focusBack = () => {
+        window.focus();
+        tab.removeEventListener('beforeunload', focusBack);
+      };
+      tab.addEventListener('beforeunload', focusBack);
+    }
+  }
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString();
   };
@@ -129,40 +148,44 @@ const TopicsList = () => {
   return (
     <div className="bg-white shadow rounded-lg">
       <div className="px-4 py-5 sm:p-6">
-        <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+        <div className="flex items-center justify-between gap-4 mb-3">
+        <h3 className="text-lg leading-6 font-medium text-gray-900">
           Explore Topics
         </h3>
+        <button className="flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed gap-2">
+          <Plus className="inline-flex"/>
+            Add Topic
+          </button>
+        </div>
 
         {/* Search and Filters */}
-        <div className="mb-6">
-          <form onSubmit={handleSearch} className="flex gap-4 mb-4">
-            <div className="flex-1">
+        <div className="flex justify-between mb-6">
+          <form onSubmit={handleSearch} className="mb-4 flex">
+            <div className="relative">
               <input
                 type="text"
                 placeholder="Search topics..."
                 value={filters.search}
                 onChange={(e) => handleFilterChange("search", e.target.value)}
                 onFocus={handleSearchFocus}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               />
-            </div>
-            <button
-              type="submit"
-              disabled={searching}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              {searching ? (
-                <>
+              <button
+                type="submit"
+                disabled={searching}
+                aria-label="Search"
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-indigo-600 hover:text-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {searching ? (
                   <LoadingSpinner size="small" />
-                  Searching...
-                </>
-              ) : (
-                "Search"
-              )}
-            </button>
+                ) : (
+                  <Search className="w-5 h-5" />
+                )}
+              </button>
+            </div>
           </form>
 
-          <div className="flex gap-4">
+          <div className="flex gap-4 mb-4">
             <select
               value={filters.sort_by}
               onChange={(e) => handleFilterChange("sort_by", e.target.value)}
@@ -219,12 +242,14 @@ const TopicsList = () => {
                 {topics.map((topic) => (
                   <tr key={topic.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-medium text-gray-900 cursor-pointer"
+                      onClick={() => handleViewResults(topic)}
+                      >
                         {topic.topic}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      {/* <div className="text-sm text-gray-500">
                         ID: {topic.id}
-                      </div>
+                      </div> */}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -239,15 +264,27 @@ const TopicsList = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {formatDate(topic.created_at)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="flex gap-2 items-center px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <button
+                        className=" text-green-600 hover:text-green-900 transition-colors duration-200 cursor-pointer"
+                        title="Explore Topic"
+                        onClick={() => handleExploreTopic(topic)}
+                      >
+                        <TelescopeIcon />
+                      </button>
                       <button
                         onClick={() => handleViewResults(topic)}
-                        className="text-indigo-600 hover:text-indigo-900 mr-3 transition-colors duration-200"
+                        className=" text-indigo-600 hover:text-indigo-900 transition-colors duration-200 cursor-pointer"
+                        title="View Results"
                       >
-                        View Results
+                        <ViewIcon />
                       </button>
-                      <button className="text-red-600 hover:text-red-900 transition-colors duration-200">
-                        Delete
+                      <button
+                        onClick={() => {}}
+                        className=" text-red-600 hover:text-red-900 transition-colors duration-200 cursor-pointer" 
+                        title="Delete"
+                      >
+                        <Trash2Icon />
                       </button>
                     </td>
                   </tr>

@@ -43,7 +43,7 @@ const LineChart = ({
             formatter={(value, name) => [value, name]}
             labelStyle={{ color: "#374151" }}
           />
-          <Legend />
+          <Legend verticalAlign="top"/>
           <Line
             type="monotone"
             dataKey={dataKey}

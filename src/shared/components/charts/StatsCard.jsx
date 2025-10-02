@@ -17,13 +17,37 @@ const StatsCard = ({
     indigo: "bg-indigo-500 text-white",
   };
 
+  // Helper to check if value is numeric and format it compactly with k, M, B
+  const formatValue = (val) => {
+    // console.log("val", val, !isNaN(Number(val?.replace(',', ''))), Number(val));
+    // Fix: Ensure value is parsed as a number, handle strings with commas, and check for valid numbers
+    if (val !== null && val !== "" && !isNaN(Number(String(val).replace(/,/g, "")))) {
+      const num = Number(String(val).replace(/,/g, ""));
+      if (num >= 1_000_000_000) {
+        // Billions
+        return (num / 1_000_000_000).toFixed(num % 1_000_000_000 === 0 ? 0 : 2).replace(/\.00$/, "") + "B";
+      } else if (num >= 1_000_000) {
+        // Millions
+        return (num / 1_000_000).toFixed(num % 1_000_000 === 0 ? 0 : 2).replace(/\.00$/, "") + "M";
+      } else if (num >= 10_000) {
+        // Thousands, show with comma
+        return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
+      } else {
+        // Show as is for < 10,000, with up to 2 decimals and commas
+        return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
+      }
+    }
+    // If not a number, return as is
+    return val;
+  };
+
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <div className="flex items-center">
         <div className={`p-3 rounded-full ${colorClasses[color]}`}>{icon}</div>
         <div className="ml-4 flex-1">
           <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="text-2xl font-semibold text-gray-900">{value}</p>
+          <p className="text-2xl font-semibold text-gray-900">{formatValue(value)}</p>
           {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
           {trend && (
             <div

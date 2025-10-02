@@ -10,6 +10,13 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+// const renderColorfulLegendText = (value, entry) => {
+//   console.log("value", value);
+//   console.log("entry", entry)
+//   const { color, payload } = entry;
+//   return <span style={{ color }}>{payload.name} ({payload.value})</span>;
+// };
+
 const BarChart = ({
   data,
   dataKey,
@@ -49,7 +56,7 @@ const BarChart = ({
             formatter={(value, name) => [value, name]}
             labelStyle={{ color: "#374151" }}
           />
-          <Legend />
+          <Legend verticalAlign="top"/>
           <Bar dataKey={dataKey} fill={color} />
         </RechartsBarChart>
       </ResponsiveContainer>

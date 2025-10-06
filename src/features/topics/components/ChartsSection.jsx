@@ -9,31 +9,37 @@ const ChartsSection = ({
   processDemographicData,
   processKeywordPopularity,
   processTrendData,
+  showDemographics = true,
+  showLocations = true,
+  showPopularity = true,
+  showTrends = true,
 }) => {
   if (!results || results.length === 0) return null;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       {/* Location Distribution */}
-      <PieChart
+      {showLocations && <PieChart
         data={processLocationData(results)}
         dataKey="value"
         nameKey="name"
         title="Location Distribution"
         height={350}
       />
+      }
 
       {/* Demographic Distribution */}
-      <PieChart
+      {showDemographics && <PieChart
         data={processDemographicData(results)}
         dataKey="value"
         nameKey="name"
         title="Demographic Distribution"
         height={350}
       />
+      }
 
       {/* Keyword Popularity */}
-      <BarChart
+      {showPopularity && <BarChart
         data={processKeywordPopularity(results)}
         dataKey="popularity"
         nameKey="name"
@@ -41,9 +47,10 @@ const ChartsSection = ({
         height={350}
         color="#8b5cf6"
       />
+      }
 
       {/* Trend Analysis */}
-      <LineChart
+      {showTrends && <LineChart
         data={processTrendData(results)}
         dataKey="increase"
         nameKey="keyword"
@@ -51,6 +58,7 @@ const ChartsSection = ({
         height={350}
         color="#06b6d4"
       />
+      }
     </div>
   );
 };

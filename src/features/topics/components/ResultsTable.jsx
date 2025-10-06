@@ -1,4 +1,13 @@
-import React from "react";
+import React, {useState} from "react";
+import {
+  processLocationData,
+  processDemographicData,
+  // processKeywordPopularity,
+  // processTrendData,
+  // calculateStats,
+} from "../utils/dataProcessing";
+// import StatisticsSection from "../components/StatisticsSection";
+import ChartsSection from "../components/ChartsSection";
 
 const ResultsTable = ({
   results,
@@ -8,6 +17,12 @@ const ResultsTable = ({
   formatPercentage,
   formatDate,
 }) => {
+  const [detailsView, setDetailsView] = useState(null);
+  const ToggleDetails = (result) => {
+    console.log("results", result);
+    if(result?.id == detailsView?.id) setDetailsView(null);
+    else setDetailsView(result);
+  }
   return (
     <div className="bg-white shadow rounded-lg">
       <div className="px-4 py-5 sm:p-6">
@@ -34,7 +49,7 @@ const ResultsTable = ({
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {results.map((result) => (
-                <tr key={result.id} className="hover:bg-gray-50">
+                <><tr key={result.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
                       {result.relevant_keyword}
@@ -60,7 +75,38 @@ const ResultsTable = ({
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {formatDate(result.created_at)}
                   </td>
+                  <td>
+                  <button
+                    className="px-3 py-1 text-xs font-medium rounded bg-gray-100 hover:bg-gray-200 text-gray-700"
+                    onClick={() => {
+                      // Toggle a showDetails property on the result object
+                      // Since result is not stateful, you need to manage expanded rows in parent state
+                      // For this example, we'll use a simple workaround with a callback prop or local state
+                      // But here, just call a function if provided
+                      ToggleDetails(result);
+
+                    }}
+                  >
+                    {detailsView?.id == result?.id ? "Hide Details" : "Show Details"}
+                  </button>
+                  </td>
                 </tr>
+                {detailsView?.id == result?.id && 
+                  <tr>
+                    <td colSpan={5}>
+
+                      {/* Charts Section */}
+                      <ChartsSection
+                        results={[result]}
+                        processLocationData={processLocationData}
+                        processDemographicData={processDemographicData}
+                        showPopularity={false}
+                        showTrends={false}
+                      />
+                    </td>
+                  </tr>
+                }
+                </>
               ))}
             </tbody>
           </table>

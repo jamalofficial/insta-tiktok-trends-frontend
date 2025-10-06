@@ -10,6 +10,8 @@ import { CompassIcon } from "lucide-react";
 import { TelescopeIcon } from "lucide-react";
 import { ViewIcon } from "lucide-react";
 import { Search } from "lucide-react";
+import Modal from "../../../shared/components/Modal"; 
+import TopicAddForm from "../pages/TopicAddForm";
 
 const TopicsList = () => {
   const navigate = useNavigate();
@@ -141,6 +143,18 @@ const TopicsList = () => {
     return new Date(dateString).toLocaleDateString();
   };
 
+  const [showAddTopicForm, setShowAddTopicForm] = useState(false);
+  const handleAddTopic = () => {
+    setShowAddTopicForm(true);
+  }
+
+  const handleAddTopicSubmit = async (topic) => {
+    // console.log("Topic", topic);
+    await topicsService.createTopic(topic);
+    setShowAddTopicForm(false);
+    fetchTopicsInitial();
+  }
+
   if (loading) {
     return <SkeletonLoader variant="table" lines={5} className="min-h-64" />;
   }
@@ -152,10 +166,13 @@ const TopicsList = () => {
         <h3 className="text-lg leading-6 font-medium text-gray-900">
           Explore Topics
         </h3>
-        <button className="flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed gap-2">
-          <Plus className="inline-flex"/>
-            Add Topic
-          </button>
+        <button
+          className="flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed gap-2"
+          onClick={() => handleAddTopic(true)}
+        >
+          <Plus className="inline-flex" />
+          Add Topic
+        </button>
         </div>
 
         {/* Search and Filters */}
@@ -340,6 +357,16 @@ const TopicsList = () => {
           </div>
         )}
       </div>
+      {showAddTopicForm && (
+        <Modal
+          isOpen={showAddTopicForm}
+          onClose={() => setShowAddTopicForm(false)}
+          title="Add Topic"
+          className="bg-opacity-100"
+        >
+          <TopicAddForm onSubmit={handleAddTopicSubmit} />
+        </Modal>
+      )}
     </div>
   );
 };

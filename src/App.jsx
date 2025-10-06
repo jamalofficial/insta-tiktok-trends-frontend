@@ -18,6 +18,7 @@ import AnalyticsPage from "./features/analytics/pages/AnalyticsPage";
 import ProfilePage from "./features/profile/pages/ProfilePage";
 import SettingsPage from "./features/settings/pages/SettingsPage";
 import TopicResultsPage from "./features/topics/pages/TopicResultsPage";
+import TopicAddForm from "./features/topics/pages/TopicAddForm";
 
 function App() {
   return (
@@ -89,6 +90,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <TopicResultsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/topics/add"
+              element={
+                <ProtectedRoute>
+                  <TopicAddForm />
                 </ProtectedRoute>
               }
             />

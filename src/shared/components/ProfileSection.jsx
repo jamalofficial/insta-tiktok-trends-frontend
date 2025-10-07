@@ -70,7 +70,7 @@ const ProfileSection = ({ onLogout }) => {
           </div>
 
           <div className="py-1">
-            <button
+            {/* <button
               onClick={handleProfileClick}
               className="w-full flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200"
             >
@@ -88,7 +88,7 @@ const ProfileSection = ({ onLogout }) => {
                 />
               </svg>
               Profile Settings
-            </button>
+            </button> */}
 
             {/* <button
               onClick={handleSettingsClick}

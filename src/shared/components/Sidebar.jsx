@@ -161,7 +161,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             </div>
 
             {/* Quick Actions */}
-            <div className="mb-6">
+            {/* <div className="mb-6">
               <h3 className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
                 Quick Actions
               </h3>
@@ -203,7 +203,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                   <span>Export Data</span>
                 </button>
               </div>
-            </div>
+            </div> */}
           </nav>
 
           {/* Profile Section */}

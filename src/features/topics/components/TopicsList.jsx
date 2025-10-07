@@ -155,6 +155,8 @@ const TopicsList = () => {
     fetchTopicsInitial();
   }
 
+
+
   if (loading) {
     return <SkeletonLoader variant="table" lines={5} className="min-h-64" />;
   }
@@ -244,9 +246,9 @@ const TopicsList = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Results
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Last Scrape
-                  </th>
+                  </th> */}
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Created
                   </th>
@@ -273,11 +275,11 @@ const TopicsList = () => {
                         {topic.topic_results.length} results
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {topic.last_scrape
                         ? formatDate(topic.last_scrape)
                         : "Never"}
-                    </td>
+                    </td> */}
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {formatDate(topic.created_at)}
                     </td>
@@ -296,13 +298,13 @@ const TopicsList = () => {
                       >
                         <ViewIcon />
                       </button>
-                      <button
+                      {/* <button
                         onClick={() => {}}
                         className=" text-red-600 hover:text-red-900 transition-colors duration-200 cursor-pointer" 
                         title="Delete"
                       >
                         <Trash2Icon />
-                      </button>
+                      </button> */}
                     </td>
                   </tr>
                 ))}

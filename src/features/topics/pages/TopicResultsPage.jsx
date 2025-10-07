@@ -127,12 +127,12 @@ const TopicResultsPage = () => {
           <TopicInfoCard topic={topic} formatDate={formatDate} />
 
           {/* Statistics Section */}
-          <StatisticsSection
+          {/* <StatisticsSection
             results={results}
             calculateStats={calculateStats}
             formatNumber={formatNumber}
             formatPercentage={formatPercentage}
-          />
+          /> */}
 
           {/* Charts Section */}
           <ChartsSection
@@ -165,6 +165,7 @@ const TopicResultsPage = () => {
             formatNumber={formatNumber}
             formatPercentage={formatPercentage}
             formatDate={formatDate}
+            calculateStats={calculateStats}
           />
         </div>
       </div>

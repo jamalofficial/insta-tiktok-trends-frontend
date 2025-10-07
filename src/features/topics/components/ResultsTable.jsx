@@ -4,9 +4,10 @@ import {
   processDemographicData,
   // processKeywordPopularity,
   // processTrendData,
-  // calculateStats,
+  calculateStats,
 } from "../utils/dataProcessing";
-// import StatisticsSection from "../components/StatisticsSection";
+
+import StatisticsSection from "../components/StatisticsSection";
 import ChartsSection from "../components/ChartsSection";
 
 const ResultsTable = ({
@@ -39,11 +40,11 @@ const ResultsTable = ({
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Trend Increase
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Time Period
-                </th>
+                </th> */}
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Created
+                  Last Update
                 </th>
               </tr>
             </thead>
@@ -65,15 +66,15 @@ const ResultsTable = ({
                       {formatPercentage(result.search_increase)}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  {/* <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-500">
                       {result.time_period_today
                         ? formatDate(result.time_period_today)
                         : "N/A"}
                     </div>
-                  </td>
+                  </td> */}
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatDate(result.created_at)}
+                    {formatDate(result.updated_at)}
                   </td>
                   <td>
                   <button
@@ -94,7 +95,12 @@ const ResultsTable = ({
                 {detailsView?.id == result?.id && 
                   <tr>
                     <td colSpan={5}>
-
+                    <StatisticsSection
+                      results={[result]}
+                      calculateStats={calculateStats}
+                      formatNumber={formatNumber}
+                      formatPercentage={formatPercentage}
+                    />
                       {/* Charts Section */}
                       <ChartsSection
                         results={[result]}

@@ -211,7 +211,7 @@ const TopicsList = () => {
               className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
             >
               <option value="created_at">Created Date</option>
-              <option value="updated_at">Updated Date</option>
+              {/* <option value="updated_at">Updated Date</option> */}
               <option value="topic">Topic Name</option>
             </select>
 

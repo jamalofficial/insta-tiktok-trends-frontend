@@ -1,6 +1,10 @@
 import { apiService } from "./api";
 
 export class TopicsService {
+
+  async getTopic(topicId) {
+    return await apiService.get(`/topics/${topicId}`);
+  }
   // Get paginated topics
   async getTopics(params = {}) {
     const queryParams = new URLSearchParams();

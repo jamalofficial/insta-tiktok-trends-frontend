@@ -124,7 +124,7 @@ const TopicResultsPage = () => {
           <TopicHeader topic={topic} topicId={topicId} />
 
           {/* Topic Info Card */}
-          <TopicInfoCard topic={topic} formatDate={formatDate} />
+          {/* <TopicInfoCard topic={topic} formatDate={formatDate} /> */}
 
           {/* Statistics Section */}
           {/* <StatisticsSection

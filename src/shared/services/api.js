@@ -43,16 +43,16 @@ class ApiService {
   // Auth endpoints
   async login(credentials) {
     const formData = new FormData();
-    formData.append("username", credentials.username);
+    formData.append("email", credentials.email);
     formData.append("password", credentials.password);
 
-    const response = await this.api.post(API_ENDPOINTS.LOGIN, formData, {
+    const response = await this.api.post(API_ENDPOINTS.LOGIN, credentials, {
       headers: {
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json",
       },
     });
     
-    console.log("API Login response:", response.data);
+    // console.log("API Login response:", response.data);
     return response.data;
   }
 

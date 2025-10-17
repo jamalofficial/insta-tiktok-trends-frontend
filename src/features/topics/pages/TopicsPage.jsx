@@ -1,5 +1,5 @@
 import React from "react";
-import Layout from "../../../shared/components/Layout";
+import Layout from "@/shared/components/Layout";
 import TopicStats from "../components/TopicStats";
 import TopicsList from "../components/TopicsList";
 
@@ -14,7 +14,7 @@ const TopicsPage = () => {
               Topics Management
             </h1>
             <p className="text-lg text-gray-600">
-              Explore and manage your TikTok trends topics and analytics.
+              Explore and manage your topics and analytics.
             </p>
           </div>
 

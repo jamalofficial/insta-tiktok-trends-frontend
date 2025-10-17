@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { useAuth } from "../../../shared/hooks/useAuth";
+import { useAuth } from "@/shared/hooks/useAuth";
 import { useNavigate, Link } from "react-router-dom";
-import Button from "../../../shared/components/Button";
-import Input from "../../../shared/components/Input";
-import { useAlert } from "../../../shared/hooks/useAlert";
+import Button from "@/shared/components/Button";
+import Input from "@/shared/components/Input";
+import { useAlert } from "@/shared/hooks/useAlert";
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -72,12 +72,12 @@ const LoginForm = () => {
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="space-y-4">
           <Input
-            label="Username"
-            name="username"
-            type="text"
+            label="Email"
+            name="email"
+            type="email"
             required
-            placeholder="Enter your username"
-            value={formData.username}
+            placeholder="Enter your email"
+            value={formData.email}
             onChange={handleChange}
           />
 

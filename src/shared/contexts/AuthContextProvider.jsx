@@ -40,10 +40,10 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       setIsLoading(true);
-      console.log("Starting login process...");
+      // console.log("Starting login process...");
       
       const authResponse = await authService.login(credentials);
-      console.log("Login response:", authResponse);
+      // console.log("Login response:", authResponse);
       
       // Check if we have the access token (handle different possible field names)
       const accessToken = authResponse.access_token || authResponse.token || authResponse.accessToken;
@@ -55,11 +55,11 @@ export const AuthProvider = ({ children }) => {
       // Set token first before making authenticated requests
       authService.setToken(accessToken);
       setToken(accessToken);
-      console.log("Token set successfully");
+      // console.log("Token set successfully");
       
       // Now get user data with the token set
       const currentUser = await authService.getCurrentUser();
-      console.log("Current user data:", currentUser);
+      // console.log("Current user data:", currentUser);
       
       authService.setUser(currentUser);
       setUser(currentUser);

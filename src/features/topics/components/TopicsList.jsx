@@ -12,6 +12,9 @@ import { ViewIcon } from "lucide-react";
 import { Search } from "lucide-react";
 import Modal from "../../../shared/components/Modal"; 
 import TopicAddForm from "../pages/TopicAddForm";
+import MultiSelect from "@/shared/components/MultiSelect";
+// import { MultiSelect } from "@/shared/ui/multi-select";
+import listService from "../../../shared/services/listService";
 
 const TopicsList = () => {
   const navigate = useNavigate();
@@ -29,6 +32,8 @@ const TopicsList = () => {
     search: "",
     sort_by: "created_at",
     sort_order: "desc",
+    demoghaphic: [], 
+    region: []
   });
 
   // Only fetch topics on initial load and when pagination changes (not when search changes)
@@ -155,6 +160,41 @@ const TopicsList = () => {
     fetchTopicsInitial();
   }
 
+  const [demographicValues, setDemographicValues] = useState([]);
+  const [regionValues, setRegionValues] = useState([]);
+
+  const fetchFiltersLists = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const dem_response = await listService.demographics();
+      const dem_items = dem_response?.items?.map((item) => ({label: item, value: item}));
+      console.log('dem_items', dem_items);
+      setDemographicValues(dem_items);
+      const reg_response = await listService.regions();
+      const reg_items = reg_response?.items?.map((item) => ({label: item, value: item}));
+      console.log('reg_items', reg_items);
+      setRegionValues(reg_items);
+    } catch (err) {
+      setError("Failed to fetch Filters");
+      console.error("Error fetching filters:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchFiltersLists();
+  }, [fetchFiltersLists]);
+
+  const setFilterValues = (value, type) => {
+    setFilters((prev) => ({
+      ...prev,
+      [type]: value,
+    }));
+  }
+
 
 
   if (loading) {
@@ -179,15 +219,15 @@ const TopicsList = () => {
 
         {/* Search and Filters */}
         <div className="flex justify-between mb-6">
-          <form onSubmit={handleSearch} className="mb-4 flex">
-            <div className="relative">
+          <form onSubmit={handleSearch} className="mb-4 flex gap-2">
+            <div className="w-full relative">
               <input
                 type="text"
                 placeholder="Search topics..."
                 value={filters.search}
                 onChange={(e) => handleFilterChange("search", e.target.value)}
                 onFocus={handleSearchFocus}
-                className="w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full pl-3 pr-10 py-2 h-full border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               />
               <button
                 type="submit"
@@ -202,7 +242,23 @@ const TopicsList = () => {
                 )}
               </button>
             </div>
+            <MultiSelect
+              // label="Demographic"
+              placeholder="Select age range" 
+              options={demographicValues}
+              value={filters?.demoghaphic}
+              onChange={(val) => setFilterValues(val, 'demoghaphic')}
+            />
+            <MultiSelect 
+              // label="Region"
+              placeholder="Select region"
+              options={regionValues}
+              value={filters?.region}
+              onChange={(val) => setFilterValues(val, 'region')}
+            />
           </form>
+
+          
 
           <div className="flex gap-4 mb-4">
             <select

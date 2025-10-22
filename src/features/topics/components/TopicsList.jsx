@@ -1,20 +1,21 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { topicsService } from "../../../shared/services/topicsService";
-import SkeletonLoader from "../../../shared/components/SkeletonLoader";
-import LoadingSpinner from "../../../shared/components/LoadingSpinner";
-import { Plus } from "lucide-react";
+import { topicsService } from "@/shared/services/topicsService";
+import SkeletonLoader from "@/shared/components/SkeletonLoader";
+import LoadingSpinner from "@/shared/components/LoadingSpinner";
+import { Plus,  } from "lucide-react";
 import { EyeIcon } from "lucide-react";
 import { Trash2Icon } from "lucide-react";
 import { CompassIcon } from "lucide-react";
 import { TelescopeIcon } from "lucide-react";
 import { ViewIcon } from "lucide-react";
 import { Search } from "lucide-react";
-import Modal from "../../../shared/components/Modal"; 
+import Modal from "@/shared/components/Modal"; 
 import TopicAddForm from "../pages/TopicAddForm";
-import MultiSelect from "@/shared/components/MultiSelect";
-// import { MultiSelect } from "@/shared/ui/multi-select";
-import listService from "../../../shared/services/listService";
+import {MultiSelect} from "@/shared/components/MultiSelect";
+import listService from "@/shared/services/listService";
+import { Button } from "@/components/ui/button";
+import SwAlert from "@/shared/components/Swal";
 
 const TopicsList = () => {
   const navigate = useNavigate();
@@ -32,12 +33,13 @@ const TopicsList = () => {
     search: "",
     sort_by: "created_at",
     sort_order: "desc",
-    demoghaphic: [], 
-    region: []
+    demographic: [], 
+    region: [],
   });
 
   // Only fetch topics on initial load and when pagination changes (not when search changes)
-  const fetchTopicsInitial = useCallback(async () => {
+  const fetchTopicsInitial = async () => {
+    console.log("called initial", {page: pagination.page, size: pagination.size, sb: filters.sort_by, so: filters.sort_order});
     try {
       setLoading(true);
       setError(null);
@@ -47,6 +49,11 @@ const TopicsList = () => {
         size: pagination.size,
         sort_by: filters.sort_by,
         sort_order: filters.sort_order,
+        // Pass only demographic and region filters, as search/sort are already assigned
+        filters: {
+          demographic: filters.demographic,
+          region: filters.region,
+        },
         // Don't include search in initial fetch
       });
 
@@ -63,13 +70,13 @@ const TopicsList = () => {
     } finally {
       setLoading(false);
     }
-  }, [pagination.page, pagination.size, filters.sort_by, filters.sort_order]);
+  }//, [pagination.page, pagination.size, filters.sort_by, filters.sort_order]);
 
   useEffect(() => {
     fetchTopicsInitial();
-  }, [fetchTopicsInitial]);
+  }, []);
 
-  const handleSearch = async (e) => {
+  const handleFiltersSubmit = async (e) => {
     e.preventDefault();
     setSearching(true);
     setPagination((prev) => ({ ...prev, page: 1 }));
@@ -82,6 +89,11 @@ const TopicsList = () => {
         search: filters.search,
         sort_by: filters.sort_by,
         sort_order: filters.sort_order,
+        // Pass only demographic and region filters, as search/sort are already assigned
+        filters: {
+          demographic: filters.demographic,
+          region: filters.region,
+        },
       });
 
       setTopics(response.items);
@@ -144,6 +156,31 @@ const TopicsList = () => {
     }
   }
 
+  const handleDeleteTopic = (topic) => {
+  SwAlert.confirm(
+    `Are you sure you want to delete the topic "${topic.topic}"?`,
+    "This action cannot be undone."
+  ).then((result) => {
+    if (result.isConfirmed) {
+      setLoading(true);
+      setError(null);
+      topicsService
+        .deleteTopic(topic.id)
+        .then(() => {
+          setTopics((prevTopics) => prevTopics.filter((t) => t.id !== topic.id));
+          fetchTopicsInitial();
+        })
+        .catch((err) => {
+          setError("Failed to delete topic.");
+          console.error("Delete topic error", err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  });
+  }
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString();
   };
@@ -170,11 +207,9 @@ const TopicsList = () => {
 
       const dem_response = await listService.demographics();
       const dem_items = dem_response?.items?.map((item) => ({label: item, value: item}));
-      console.log('dem_items', dem_items);
       setDemographicValues(dem_items);
       const reg_response = await listService.regions();
       const reg_items = reg_response?.items?.map((item) => ({label: item, value: item}));
-      console.log('reg_items', reg_items);
       setRegionValues(reg_items);
     } catch (err) {
       setError("Failed to fetch Filters");
@@ -204,23 +239,23 @@ const TopicsList = () => {
   return (
     <div className="bg-white shadow rounded-lg">
       <div className="px-4 py-5 sm:p-6">
-        <div className="flex items-center justify-between gap-4 mb-3">
-        <h3 className="text-lg leading-6 font-medium text-gray-900">
-          Explore Topics
-        </h3>
-        <button
-          className="flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed gap-2"
-          onClick={() => handleAddTopic(true)}
-        >
-          <Plus className="inline-flex" />
-          Add Topic
-        </button>
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-3">
+          <h3 className="text-lg leading-6 font-medium text-gray-900">
+            Explore Topics
+          </h3>
+          <button
+            className="flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed gap-2"
+            onClick={() => handleAddTopic(true)}
+          >
+            <Plus className="inline-flex" />
+            Add Topic
+          </button>
         </div>
 
         {/* Search and Filters */}
-        <div className="flex justify-between mb-6">
-          <form onSubmit={handleSearch} className="mb-4 flex gap-2">
-            <div className="w-full relative">
+        <div className="flex flex-col lg:flex-row justify-between mb-6">
+          <form onSubmit={handleFiltersSubmit} className="mb-4 flex flex-col md:flex-row gap-2">
+            <div className="relative">
               <input
                 type="text"
                 placeholder="Search topics..."
@@ -242,24 +277,33 @@ const TopicsList = () => {
                 )}
               </button>
             </div>
+            <div>
             <MultiSelect
               // label="Demographic"
               placeholder="Select age range" 
               options={demographicValues}
-              value={filters?.demoghaphic}
-              onChange={(val) => setFilterValues(val, 'demoghaphic')}
+              value={filters?.demographic}
+              responsive={true}
+              onValueChange={(val) => setFilterValues(val, 'demographic')}
             />
-            <MultiSelect 
-              // label="Region"
-              placeholder="Select region"
-              options={regionValues}
-              value={filters?.region}
-              onChange={(val) => setFilterValues(val, 'region')}
-            />
+            </div>
+            <div>
+              <MultiSelect 
+                // label="Region"
+                placeholder="Select region"
+                options={regionValues}
+                value={filters?.region}
+                onValueChange={(val) => setFilterValues(val, 'region')}
+              />
+            </div>
+            <Button
+              type="submit"
+              className="px-4 py-2 self-center"
+              disabled={searching}
+            >
+              {searching ? <LoadingSpinner size="small" /> : "Filter"}
+            </Button>
           </form>
-
-          
-
           <div className="flex gap-4 mb-4">
             <select
               value={filters.sort_by}
@@ -354,13 +398,13 @@ const TopicsList = () => {
                       >
                         <ViewIcon />
                       </button>
-                      {/* <button
-                        onClick={() => {}}
+                      <button
+                        onClick={() => handleDeleteTopic(topic)}
                         className=" text-red-600 hover:text-red-900 transition-colors duration-200 cursor-pointer" 
                         title="Delete"
                       >
                         <Trash2Icon />
-                      </button> */}
+                      </button>
                     </td>
                   </tr>
                 ))}

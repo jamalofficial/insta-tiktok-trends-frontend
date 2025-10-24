@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { topicsService } from "@/shared/services/topicsService";
+import { TopicService } from "@/shared/services/TopicService";
+import { logService } from "@/shared/services/logService";
 import SkeletonLoader from "@/shared/components/SkeletonLoader";
 import LoadingSpinner from "@/shared/components/LoadingSpinner";
 import { Plus,  } from "lucide-react";
@@ -44,7 +45,7 @@ const TopicsList = () => {
       setLoading(true);
       setError(null);
 
-      const response = await topicsService.getTopics({
+      const response = await TopicService.getTopics({
         page: pagination.page,
         size: pagination.size,
         sort_by: filters.sort_by,
@@ -83,7 +84,7 @@ const TopicsList = () => {
 
     try {
       setError(null);
-      const response = await topicsService.getTopics({
+      const response = await TopicService.getTopics({
         page: 1,
         size: pagination.size,
         search: filters.search,
@@ -134,6 +135,7 @@ const TopicsList = () => {
       fetchTopicsInitial();
     }
   };
+  
 
   const handlePageChange = (newPage) => {
     setPagination((prev) => ({ ...prev, page: newPage }));
@@ -157,28 +159,41 @@ const TopicsList = () => {
   }
 
   const handleDeleteTopic = (topic) => {
-  SwAlert.confirm(
-    `Are you sure you want to delete the topic "${topic.topic}"?`,
-    "This action cannot be undone."
-  ).then((result) => {
-    if (result.isConfirmed) {
-      setLoading(true);
-      setError(null);
-      topicsService
-        .deleteTopic(topic.id)
-        .then(() => {
-          setTopics((prevTopics) => prevTopics.filter((t) => t.id !== topic.id));
-          fetchTopicsInitial();
-        })
-        .catch((err) => {
-          setError("Failed to delete topic.");
-          console.error("Delete topic error", err);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }
-  });
+    SwAlert.confirm(
+      `Are you sure you want to delete the topic "${topic.topic}"?`,
+      "This action cannot be undone."
+    ).then((result) => {
+      if (result.isConfirmed) {
+        setLoading(true);
+        setError(null);
+        TopicService
+          .deleteTopic(topic.id)
+          .then(() => {
+            setTopics((prevTopics) => prevTopics.filter((t) => t.id !== topic.id));
+            fetchTopicsInitial();
+          })
+          .catch((err) => {
+            setError("Failed to delete topic.");
+            console.error("Delete topic error", err);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      }
+    });
+  }
+
+  const handleScrapTopic = (topic) => {
+    logService.getLogsScreenshot({ topic_id: topic.id })
+      .then((response) => {
+        // Optional: handle the screenshot response (e.g., show success message or trigger download)
+        SwAlert.success("Scraping triggered!", "A screenshot is being created for this topic.");
+      })
+      .catch((err) => {
+        setError("Failed to trigger scrape for topic.");
+        console.error("Scrap topic error", err);
+        SwAlert.error("Failed to trigger scrape for topic.");
+      });
   }
 
   const formatDate = (dateString) => {
@@ -192,7 +207,7 @@ const TopicsList = () => {
 
   const handleAddTopicSubmit = async (topic) => {
     // console.log("Topic", topic);
-    await topicsService.createTopic(topic);
+    await TopicService.createTopic(topic);
     setShowAddTopicForm(false);
     fetchTopicsInitial();
   }
@@ -277,7 +292,7 @@ const TopicsList = () => {
                 )}
               </button>
             </div>
-            <div>
+            <div className="max-w-[250px]">
             <MultiSelect
               // label="Demographic"
               placeholder="Select age range" 
@@ -287,7 +302,7 @@ const TopicsList = () => {
               onValueChange={(val) => setFilterValues(val, 'demographic')}
             />
             </div>
-            <div>
+            <div className="max-w-[250px]">
               <MultiSelect 
                 // label="Region"
                 placeholder="Select region"
@@ -384,6 +399,13 @@ const TopicsList = () => {
                       {formatDate(topic.created_at)}
                     </td>
                     <td className="flex gap-2 items-center px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <button
+                        className=" text-green-600 hover:text-green-900 transition-colors duration-200 cursor-pointer"
+                        title="Explore Topic"
+                        onClick={() => handleScrapTopic(topic)}
+                      >
+                        <CompassIcon />
+                      </button>
                       <button
                         className=" text-green-600 hover:text-green-900 transition-colors duration-200 cursor-pointer"
                         title="Explore Topic"

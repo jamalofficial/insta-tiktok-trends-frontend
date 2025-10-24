@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { topicsService } from "../../../shared/services/topicsService";
+import { TopicService } from "../../../shared/services/TopicService";
 import Layout from "../../../shared/components/Layout";
 import SkeletonLoader from "../../../shared/components/SkeletonLoader";
 import TopicHeader from "../components/TopicHeader";
@@ -42,7 +42,7 @@ const TopicResultsPage = () => {
 
   const fetchTopic = useCallback(async () => {
     try {
-      const topicData = await topicsService.getTopic(topicId);
+      const topicData = await TopicService.getTopic(topicId);
       setTopic(topicData);
     } catch (err) {
       console.error("Error fetching topic:", err);
@@ -68,7 +68,7 @@ const TopicResultsPage = () => {
         }
       });
 
-      const response = await topicsService.getTopicResults(topicId, params);
+      const response = await TopicService.getTopicResults(topicId, params);
 
       setResults(response.items);
       setPagination({

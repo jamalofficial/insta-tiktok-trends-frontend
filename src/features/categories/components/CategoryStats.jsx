@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { TopicService } from "../../../shared/services/TopicService";
-import SkeletonLoader from "../../../shared/components/SkeletonLoader";
+import { categoryService } from "@/shared/services/categoryService";
+import SkeletonLoader from "@/shared/components/SkeletonLoader";
 
-const TopicStats = () => {
+const CategoryStats = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,7 +15,8 @@ const TopicStats = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await TopicService.getTopicStats();
+      // You may need to implement getCategoryStats in the backend
+      const response = await categoryService.getCategoryStats?.();
       setStats(response);
     } catch (err) {
       setError("Failed to fetch statistics");
@@ -43,29 +44,18 @@ const TopicStats = () => {
 
   const statCards = [
     {
-      title: "Total Topics",
-      value: stats.total_topics.toLocaleString(),
+      title: "Total Categories",
+      value: stats.total_categories?.toLocaleString() ?? "N/A",
       icon: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z",
       color: "indigo",
     },
     {
-      title: "Total Results",
-      value: stats.total_results.toLocaleString(),
+      title: "Most Recent",
+      value: stats.most_recent_category ?? "N/A",
       icon: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z",
       color: "green",
     },
-    {
-      title: "Avg Results/Topic",
-      value: stats.avg_results_per_topic.toFixed(1),
-      icon: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6",
-      color: "yellow",
-    },
-    {
-      title: "Most Popular",
-      value: stats.most_popular_topic || "N/A",
-      icon: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z",
-      color: "purple",
-    },
+    // Add more cards as needed by available stats fields
   ];
 
   return (
@@ -111,4 +101,4 @@ const TopicStats = () => {
   );
 };
 
-export default TopicStats;
+export default CategoryStats;

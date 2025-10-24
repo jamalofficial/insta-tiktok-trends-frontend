@@ -1,9 +1,11 @@
 import { apiService } from "./api";
 
-export class TopicsService {
+const endpoint = "/topics";
+
+export class TopicService {
 
   async getTopic(topicId) {
-    return await apiService.get(`/topics/${topicId}`);
+    return await apiService.get(`${endpoint}/${topicId}`);
   }
   // Get paginated topics
   async getTopics(params = {}) {
@@ -38,19 +40,19 @@ export class TopicsService {
   }
 
     const queryString = queryParams.toString();
-    const url = queryString ? `/topics/?${queryString}` : "/topics/";
+    const url = queryString ? `${endpoint}/?${queryString}` : `${endpoint}/`;
 
     return await apiService.get(url);
   }
 
   // Get topic statistics
   async getTopicStats() {
-    return await apiService.get("/topics/stats");
+    return await apiService.get(`${endpoint}/stats`);
   }
 
   // Get specific topic with stats
   async getTopicWithStats(topicId) {
-    return await apiService.get(`/topics/${topicId}`);
+    return await apiService.get(`${endpoint}/${topicId}`);
   }
 
   // Get topic results
@@ -69,27 +71,27 @@ export class TopicsService {
 
     const queryString = queryParams.toString();
     const url = queryString
-      ? `/topics/${topicId}/results?${queryString}`
-      : `/topics/${topicId}/results`;
+      ? `${endpoint}/${topicId}/results?${queryString}`
+      : `${endpoint}/${topicId}/results`;
 
     return await apiService.get(url);
   }
 
   // Create new topic
   async createTopic(topicData) {
-    return await apiService.post("/topics/", topicData);
+    return await apiService.post(`${endpoint}/`, topicData);
   }
 
   // Update topic
   async updateTopic(topicId, topicData) {
-    return await apiService.put(`/topics/${topicId}`, topicData);
+    return await apiService.put(`${endpoint}/${topicId}`, topicData);
   }
 
   // Delete topic
   async deleteTopic(topicId) {
-    return await apiService.delete(`/topics/${topicId}`);
+    return await apiService.delete(`${endpoint}/${topicId}`);
   }
 }
 
-export const topicsService = new TopicsService();
-export default topicsService;
+export const topicService = new TopicService();
+export default topicService;

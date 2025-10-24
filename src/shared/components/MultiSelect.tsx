@@ -322,7 +322,7 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
 			searchable = true,
 			emptyIndicator,
 			autoSize = false,
-			singleLine = false,
+			singleLine = true,
 			popoverClassName,
 			disabled = false,
 			responsive,

@@ -19,10 +19,20 @@ import ProfilePage from "./features/profile/pages/ProfilePage";
 import SettingsPage from "./features/settings/pages/SettingsPage";
 import TopicResultsPage from "./features/topics/pages/TopicResultsPage";
 import TopicAddForm from "./features/topics/pages/TopicAddForm";
+import CategoriesPage from "./features/categories/pages/CategoriesPage";
+import { useAuth } from "./shared/hooks/useAuth";
 
 const Middleware = ({children}) => {
-  // console.log("here we go..!");
    return <>{children}</>;
+}
+
+function CategoriesProtectedRoute({ children }) {
+  const { user } = useAuth();
+  if (!(user && user.is_superuser)) {
+    console.log("categories...", user);
+    return <Navigate to="/dashboard" replace />;
+  }
+  return children;
 }
 
 function App() {
@@ -33,84 +43,62 @@ function App() {
           <Router>
             <Routes>
               {/* Public routes - redirect to dashboard if authenticated */}
-              <Route
-                path="/login"
-                element={
-                  <AuthGuard>
-                    <LoginPage />
-                  </AuthGuard>
-                }
-              />
-              <Route
-                path="/register"
-                element={
-                  <AuthGuard>
-                    <RegisterPage />
-                  </AuthGuard>
-                }
-              />
+              <Route path="/login" element={
+                <AuthGuard>
+                  <LoginPage />
+                </AuthGuard>
+              } />
+              <Route path="/register" element={
+                <AuthGuard>
+                  <RegisterPage />
+                </AuthGuard>
+              } />
 
               {/* Protected routes */}
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/topics"
-                element={
-                  <ProtectedRoute>
-                    <TopicsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/analytics"
-                element={
-                  <ProtectedRoute>
-                    <AnalyticsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute>
-                    <ProfilePage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/settings"
-                element={
-                  <ProtectedRoute>
-                    <SettingsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/topics/:topicId/results"
-                element={
-                  <ProtectedRoute>
-                    <TopicResultsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/topics/add"
-                element={
-                  <ProtectedRoute>
-                    <TopicAddForm />
-                  </ProtectedRoute>
-                }
-              />
-
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/topics" element={
+                <ProtectedRoute>
+                  <TopicsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/analytics" element={
+                <ProtectedRoute>
+                  <AnalyticsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              } />
+              <Route path="/settings" element={
+                <ProtectedRoute>
+                  <SettingsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/topics/:topicId/results" element={
+                <ProtectedRoute>
+                  <TopicResultsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/topics/add" element={
+                <ProtectedRoute>
+                  <TopicAddForm />
+                </ProtectedRoute>
+              } />
+              <Route path="/categories" element={
+                <ProtectedRoute>
+                  <CategoriesProtectedRoute>
+                    <CategoriesPage />
+                  </CategoriesProtectedRoute>
+                </ProtectedRoute>
+              } />
               {/* Home page */}
               <Route path="/" element={<HomePage />} />
-
               {/* Catch all - redirect to dashboard */}
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>

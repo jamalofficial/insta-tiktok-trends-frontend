@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { topicsService } from "../../../shared/services/topicsService";
+import { TopicService } from "../../../shared/services/TopicService";
 import SkeletonLoader from "../../../shared/components/SkeletonLoader";
 
 const TopicResults = ({ topicId, topicName, onClose }) => {
@@ -38,7 +38,7 @@ const TopicResults = ({ topicId, topicName, onClose }) => {
         }
       });
 
-      const response = await topicsService.getTopicResults(topicId, params);
+      const response = await TopicService.getTopicResults(topicId, params);
 
       setResults(response.items);
       setPagination({

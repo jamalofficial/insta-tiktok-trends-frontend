@@ -1,5 +1,5 @@
 import React from "react";
-import StatsCard from "../../../shared/components/charts/StatsCard";
+import StatsCard from "@/shared/components/charts/StatsCard";
 
 const StatisticsSection = ({
   results,

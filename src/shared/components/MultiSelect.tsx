@@ -105,178 +105,48 @@ interface MultiSelectGroup {
 	options: MultiSelectOption[];
 }
 
-/**
- * Props for MultiSelect component
- */
-interface MultiSelectProps
-	extends Omit<
-			React.ButtonHTMLAttributes<HTMLButtonElement>,
-			"animationConfig"
-		>,
-		VariantProps<typeof multiSelectVariants> {
-	/**
-	 * An array of option objects or groups to be displayed in the multi-select component.
-	 */
-	options: MultiSelectOption[] | MultiSelectGroup[];
-	/**
-	 * Callback function triggered when the selected values change.
-	 * Receives an array of the new selected values.
-	 */
-	onValueChange: (value: string[]) => void;
+type SelectionMode = "multiple" | "single";
 
-	/** The default selected values when the component mounts. */
-	defaultValue?: string[];
-
-	/**
-	 * Placeholder text to be displayed when no values are selected.
-	 * Optional, defaults to "Select options".
-	 */
-	placeholder?: string;
-
-	/**
-	 * Animation duration in seconds for the visual effects (e.g., bouncing badges).
-	 * Optional, defaults to 0 (no animation).
-	 */
-	animation?: number;
-
-	/**
-	 * Advanced animation configuration for different component parts.
-	 * Optional, allows fine-tuning of various animation effects.
-	 */
-	animationConfig?: AnimationConfig;
-
-	/**
-	 * Maximum number of items to display. Extra selected items will be summarized.
-	 * Optional, defaults to 3.
-	 */
-	maxCount?: number;
-
-	/**
-	 * The modality of the popover. When set to true, interaction with outside elements
-	 * will be disabled and only popover content will be visible to screen readers.
-	 * Optional, defaults to false.
-	 */
-	modalPopover?: boolean;
-
-	/**
-	 * If true, renders the multi-select component as a child of another component.
-	 * Optional, defaults to false.
-	 */
-	asChild?: boolean;
-
-	/**
-	 * Additional class names to apply custom styles to the multi-select component.
-	 * Optional, can be used to add custom styles.
-	 */
-	className?: string;
-
-	/**
-	 * If true, disables the select all functionality.
-	 * Optional, defaults to false.
-	 */
-	hideSelectAll?: boolean;
-
-	/**
-	 * If true, shows search functionality in the popover.
-	 * If false, hides the search input completely.
-	 * Optional, defaults to true.
-	 */
-	searchable?: boolean;
-
-	/**
-	 * Custom empty state message when no options match search.
-	 * Optional, defaults to "No results found."
-	 */
-	emptyIndicator?: React.ReactNode;
-
-	/**
-	 * If true, allows the component to grow and shrink with its content.
-	 * If false, uses fixed width behavior.
-	 * Optional, defaults to false.
-	 */
-	autoSize?: boolean;
-
-	/**
-	 * If true, shows badges in a single line with horizontal scroll.
-	 * If false, badges wrap to multiple lines.
-	 * Optional, defaults to false.
-	 */
-	singleLine?: boolean;
-
-	/**
-	 * Custom CSS class for the popover content.
-	 * Optional, can be used to customize popover appearance.
-	 */
-	popoverClassName?: string;
-
-	/**
-	 * If true, disables the component completely.
-	 * Optional, defaults to false.
-	 */
-	disabled?: boolean;
-
-	/**
-	 * Responsive configuration for different screen sizes.
-	 * Allows customizing maxCount and other properties based on viewport.
-	 * Can be boolean true for default responsive behavior or an object for custom configuration.
-	 */
-	responsive?:
-		| boolean
-		| {
-				/** Configuration for mobile devices (< 640px) */
-				mobile?: {
-					maxCount?: number;
-					hideIcons?: boolean;
-					compactMode?: boolean;
-				};
-				/** Configuration for tablet devices (640px - 1024px) */
-				tablet?: {
-					maxCount?: number;
-					hideIcons?: boolean;
-					compactMode?: boolean;
-				};
-				/** Configuration for desktop devices (> 1024px) */
-				desktop?: {
-					maxCount?: number;
-					hideIcons?: boolean;
-					compactMode?: boolean;
-				};
-		  };
-
-	/**
-	 * Minimum width for the component.
-	 * Optional, defaults to auto-sizing based on content.
-	 * When set, component will not shrink below this width.
-	 */
-	minWidth?: string;
-
-	/**
-	 * Maximum width for the component.
-	 * Optional, defaults to 100% of container.
-	 * Component will not exceed container boundaries.
-	 */
-	maxWidth?: string;
-
-	/**
-	 * If true, automatically removes duplicate options based on their value.
-	 * Optional, defaults to false (shows warning in dev mode instead).
-	 */
-	deduplicateOptions?: boolean;
-
-	/**
-	 * If true, the component will reset its internal state when defaultValue changes.
-	 * Useful for React Hook Form integration and form reset functionality.
-	 * Optional, defaults to true.
-	 */
-	resetOnDefaultValueChange?: boolean;
-
-	/**
-	 * If true, automatically closes the popover after selecting an option.
-	 * Useful for single-selection-like behavior or mobile UX.
-	 * Optional, defaults to false.
-	 */
-	closeOnSelect?: boolean;
+interface MultiSelectBaseProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "animationConfig">, VariantProps<typeof multiSelectVariants> {
+  options: MultiSelectOption[] | MultiSelectGroup[];
+  placeholder?: string;
+  animation?: number;
+  animationConfig?: AnimationConfig;
+  modalPopover?: boolean;
+  asChild?: boolean;
+  className?: string;
+  hideSelectAll?: boolean;
+  searchable?: boolean;
+  emptyIndicator?: React.ReactNode;
+  autoSize?: boolean;
+  singleLine?: boolean;
+  popoverClassName?: string;
+  disabled?: boolean;
+  responsive?: boolean | {
+    mobile?: { maxCount?: number; hideIcons?: boolean; compactMode?: boolean };
+    tablet?: { maxCount?: number; hideIcons?: boolean; compactMode?: boolean };
+    desktop?: { maxCount?: number; hideIcons?: boolean; compactMode?: boolean };
+  };
+  minWidth?: string;
+  maxWidth?: string;
+  deduplicateOptions?: boolean;
+  resetOnDefaultValueChange?: boolean;
+  closeOnSelect?: boolean;
+  selectionMode?: SelectionMode;
 }
+
+interface MultiSelectSingleProps extends MultiSelectBaseProps {
+  selectionMode: "single";
+  value: string | null;
+  onValueChange: (value: string | null) => void;
+}
+interface MultiSelectMultipleProps extends MultiSelectBaseProps {
+  selectionMode?: "multiple";
+  value: string[];
+  onValueChange: (value: string[]) => void;
+}
+
+type MultiSelectProps = MultiSelectSingleProps | MultiSelectMultipleProps;
 
 /**
  * Imperative methods exposed through ref
@@ -310,6 +180,8 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
 			options,
 			onValueChange,
 			variant,
+			value,
+			selectionMode = "multiple",
 			defaultValue = [],
 			placeholder = "Select options",
 			animation = 0,
@@ -335,8 +207,11 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
 		},
 		ref
 	) => {
-		const [selectedValues, setSelectedValues] =
-			React.useState<string[]>(defaultValue);
+		const isSingle = selectionMode === "single";
+		// Ensure value always matches the correct shape in both modes
+		const [selectedValues, setSelectedValues] = React.useState<string[]>(
+			isSingle ? (value ? [value] : []) : (value as string[] | undefined) || []
+		);
 		const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
 		const [isAnimating, setIsAnimating] = React.useState(false);
 		const [searchValue, setSearchValue] = React.useState("");
@@ -618,32 +493,54 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
 		};
 
 		const toggleOption = (optionValue: string) => {
-			if (disabled) return;
-			const option = getOptionByValue(optionValue);
-			if (option?.disabled) return;
-			const newSelectedValues = selectedValues.includes(optionValue)
-				? selectedValues.filter((value) => value !== optionValue)
-				: [...selectedValues, optionValue];
-			setSelectedValues(newSelectedValues);
-			onValueChange(newSelectedValues);
-			if (closeOnSelect) {
-				setIsPopoverOpen(false);
+			if (props.disabled) return;
+			// Single-selection mode
+			if (isSingle) {
+				let newValue: string | null;
+				if (selectedValues[0] === optionValue) {
+					newValue = null;
+					setSelectedValues([]);
+				} else {
+					newValue = optionValue;
+					setSelectedValues([optionValue]);
+				}
+				(onValueChange as (value: string | null) => void)(newValue);
+				setIsPopoverOpen(false); // close popover for single
+			} else {
+				// Multiple-selection mode
+				const alreadySelected = selectedValues.includes(optionValue);
+				let newSelectedValues: string[];
+				if (alreadySelected) {
+					newSelectedValues = selectedValues.filter((v) => v !== optionValue);
+				} else {
+					newSelectedValues = [...selectedValues, optionValue];
+				}
+				setSelectedValues(newSelectedValues);
+				(onValueChange as (value: string[]) => void)(newSelectedValues);
+				if ((props as MultiSelectMultipleProps).closeOnSelect) {
+					setIsPopoverOpen(false);
+				}
 			}
 		};
 
 		const handleClear = () => {
-			if (disabled) return;
-			setSelectedValues([]);
-			onValueChange([]);
+			if (props.disabled) return;
+			if (isSingle) {
+				setSelectedValues([]);
+				(onValueChange as (value: string | null) => void)(null);
+			} else {
+				setSelectedValues([]);
+				(onValueChange as (value: string[]) => void)([]);
+			}
 		};
 
 		const handleTogglePopover = () => {
-			if (disabled) return;
+			if (props.disabled) return;
 			setIsPopoverOpen((prev) => !prev);
 		};
 
 		const clearExtraOptions = () => {
-			if (disabled) return;
+			if (props.disabled) return;
 			const newSelectedValues = selectedValues.slice(
 				0,
 				responsiveSettings.maxCount
@@ -653,7 +550,7 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
 		};
 
 		const toggleAll = () => {
-			if (disabled) return;
+			if (props.disabled) return;
 			const allOptions = getAllOptions().filter((option) => !option.disabled);
 			if (selectedValues.length === allOptions.length) {
 				handleClear();

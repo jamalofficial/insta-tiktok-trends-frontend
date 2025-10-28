@@ -71,10 +71,10 @@ const CategoryAddForm = ({ onSubmit, isLoading = false, error = null }) => {
         <MultiSelect
           options={statusOptions}
           placeholder="Select status"
-          value={watchedStatus ? [watchedStatus] : []}
-          maxCount={1}
+          selectionMode="single"
+          value={watchedStatus || null}
+          onValueChange={(val) => setValue("status", val || "")}
           hideSelectAll={true}
-          onValueChange={(val) => setValue("status", val[0] || "")}
           disabled={isSubmitting || isLoading}
           searchable={false}
           singleLine

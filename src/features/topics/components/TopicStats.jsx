@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { TopicService } from "../../../shared/services/TopicService";
-import SkeletonLoader from "../../../shared/components/SkeletonLoader";
+import { topicService } from "@/shared/services/topicService";
+import SkeletonLoader from "@/shared/components/SkeletonLoader";
 
 const TopicStats = () => {
   const [stats, setStats] = useState(null);
@@ -15,7 +15,7 @@ const TopicStats = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await TopicService.getTopicStats();
+      const response = await topicService.getTopicStats();
       setStats(response);
     } catch (err) {
       setError("Failed to fetch statistics");

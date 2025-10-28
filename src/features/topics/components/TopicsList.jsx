@@ -1,19 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { TopicService } from "@/shared/services/TopicService";
+import { topicService } from "@/shared/services/topicService";
 import { logService } from "@/shared/services/logService";
 import SkeletonLoader from "@/shared/components/SkeletonLoader";
 import LoadingSpinner from "@/shared/components/LoadingSpinner";
-import { Plus,  } from "lucide-react";
-import { EyeIcon } from "lucide-react";
-import { Trash2Icon } from "lucide-react";
-import { CompassIcon } from "lucide-react";
-import { TelescopeIcon } from "lucide-react";
-import { ViewIcon } from "lucide-react";
-import { Search } from "lucide-react";
+import { Plus, Trash2Icon, CompassIcon, TelescopeIcon, EyeIcon, Search } from "lucide-react";
 import Modal from "@/shared/components/Modal"; 
 import TopicAddForm from "../pages/TopicAddForm";
-import {MultiSelect} from "@/shared/components/MultiSelect";
+import { MultiSelect } from "@/shared/components/MultiSelect";
 import listService from "@/shared/services/listService";
 import { Button } from "@/components/ui/button";
 import SwAlert from "@/shared/components/Swal";
@@ -40,12 +34,12 @@ const TopicsList = () => {
 
   // Only fetch topics on initial load and when pagination changes (not when search changes)
   const fetchTopicsInitial = async () => {
-    console.log("called initial", {page: pagination.page, size: pagination.size, sb: filters.sort_by, so: filters.sort_order});
+    // console.log("called initial", {page: pagination.page, size: pagination.size, sb: filters.sort_by, so: filters.sort_order});
     try {
       setLoading(true);
       setError(null);
 
-      const response = await TopicService.getTopics({
+      const response = await topicService.getTopics({
         page: pagination.page,
         size: pagination.size,
         sort_by: filters.sort_by,
@@ -84,7 +78,7 @@ const TopicsList = () => {
 
     try {
       setError(null);
-      const response = await TopicService.getTopics({
+      const response = await topicService.getTopics({
         page: 1,
         size: pagination.size,
         search: filters.search,
@@ -166,7 +160,7 @@ const TopicsList = () => {
       if (result.isConfirmed) {
         setLoading(true);
         setError(null);
-        TopicService
+        topicService
           .deleteTopic(topic.id)
           .then(() => {
             setTopics((prevTopics) => prevTopics.filter((t) => t.id !== topic.id));
@@ -207,7 +201,7 @@ const TopicsList = () => {
 
   const handleAddTopicSubmit = async (topic) => {
     // console.log("Topic", topic);
-    await TopicService.createTopic(topic);
+    await topicService.createTopic(topic);
     setShowAddTopicForm(false);
     fetchTopicsInitial();
   }
@@ -399,13 +393,13 @@ const TopicsList = () => {
                       {formatDate(topic.created_at)}
                     </td>
                     <td className="flex gap-2 items-center px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
+                      {/* <button
                         className=" text-green-600 hover:text-green-900 transition-colors duration-200 cursor-pointer"
                         title="Explore Topic"
                         onClick={() => handleScrapTopic(topic)}
                       >
                         <CompassIcon />
-                      </button>
+                      </button> */}
                       <button
                         className=" text-green-600 hover:text-green-900 transition-colors duration-200 cursor-pointer"
                         title="Explore Topic"
@@ -418,7 +412,7 @@ const TopicsList = () => {
                         className=" text-indigo-600 hover:text-indigo-900 transition-colors duration-200 cursor-pointer"
                         title="View Results"
                       >
-                        <ViewIcon />
+                        <EyeIcon />
                       </button>
                       <button
                         onClick={() => handleDeleteTopic(topic)}

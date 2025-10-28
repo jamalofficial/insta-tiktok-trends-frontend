@@ -1,7 +1,7 @@
 import React from "react";
-import PieChart from "../../../shared/components/charts/PieChart";
-import BarChart from "../../../shared/components/charts/BarChart";
-import LineChart from "../../../shared/components/charts/LineChart";
+import PieChart from "@/shared/components/charts/PieChart";
+import BarChart from "@/shared/components/charts/BarChart";
+import LineChart from "@/shared/components/charts/LineChart";
 
 const ChartsSection = ({
   results,

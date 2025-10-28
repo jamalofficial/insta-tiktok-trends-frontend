@@ -63,7 +63,7 @@ class ApiService {
 
   async getCurrentUser() {
     const response = await this.api.get(API_ENDPOINTS.ME);
-    console.log("API getCurrentUser response:", response.data);
+    // console.log("API getCurrentUser response:", response.data);
     return response.data;
   }
 

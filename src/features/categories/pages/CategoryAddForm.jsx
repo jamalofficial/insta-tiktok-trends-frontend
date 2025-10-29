@@ -6,7 +6,7 @@ import { MultiSelect } from "@/shared/components/MultiSelect";
 
 const categorySchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(255),
-  slug_or_uuid: z.string().max(255).optional().or(z.literal("")),
+  // slug_or_uuid: z.string().max(255).optional().or(z.literal("")),
   status: z.string().max(50).optional().or(z.literal("")),
 });
 
@@ -27,7 +27,7 @@ const CategoryAddForm = ({ onSubmit, isLoading = false, error = null }) => {
     resolver: zodResolver(categorySchema),
     defaultValues: {
       name: "",
-      slug_or_uuid: "",
+      // slug_or_uuid: "",
       status: "",
     },
   });
@@ -54,7 +54,7 @@ const CategoryAddForm = ({ onSubmit, isLoading = false, error = null }) => {
         />
         {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
       </div>
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <label htmlFor="slug_or_uuid" className="block text-sm font-medium text-gray-700 mb-1">Slug / UUID</label>
         <input
           id="slug_or_uuid"
@@ -65,7 +65,7 @@ const CategoryAddForm = ({ onSubmit, isLoading = false, error = null }) => {
           disabled={isSubmitting || isLoading}
         />
         {errors.slug_or_uuid && <p className="text-red-500 text-xs mt-1">{errors.slug_or_uuid.message}</p>}
-      </div>
+      </div> */}
       <div className="mb-4">
         <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">Status</label>
         <MultiSelect

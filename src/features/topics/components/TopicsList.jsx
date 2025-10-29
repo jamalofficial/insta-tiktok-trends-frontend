@@ -1,16 +1,19 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { topicService } from "@/shared/services/topicService";
 import { logService } from "@/shared/services/logService";
 import SkeletonLoader from "@/shared/components/SkeletonLoader";
 import LoadingSpinner from "@/shared/components/LoadingSpinner";
-import { Plus, Trash2Icon, CompassIcon, TelescopeIcon, EyeIcon, Search } from "lucide-react";
-import Modal from "@/shared/components/Modal"; 
+import { Plus, Trash2Icon, CompassIcon, TelescopeIcon, EyeIcon, Search, ArrowDown, ArrowUp } from "lucide-react";
+import Modal from "@/shared/components/Modal";
 import TopicAddForm from "../pages/TopicAddForm";
 import { MultiSelect } from "@/shared/components/MultiSelect";
-import listService from "@/shared/services/listService";
 import { Button } from "@/components/ui/button";
 import SwAlert from "@/shared/components/Swal";
+import TopicFilter from "./TopicFilter";
+
+const DEFAULT_SORT_BY = "created_at";
+const DEFAULT_SORT_ORDER = "desc";
 
 const TopicsList = () => {
   const navigate = useNavigate();
@@ -24,17 +27,9 @@ const TopicsList = () => {
     total: 0,
     pages: 0,
   });
-  const [filters, setFilters] = useState({
-    search: "",
-    sort_by: "created_at",
-    sort_order: "desc",
-    demographic: [], 
-    region: [],
-  });
 
-  // Only fetch topics on initial load and when pagination changes (not when search changes)
-  const fetchTopicsInitial = async () => {
-    // console.log("called initial", {page: pagination.page, size: pagination.size, sb: filters.sort_by, so: filters.sort_order});
+  // Only fetch topics on initial load and when pagination or sort changes (not when search changes)
+  const fetchTopicsInitial = async (filters = {}) => {
     try {
       setLoading(true);
       setError(null);
@@ -42,12 +37,13 @@ const TopicsList = () => {
       const response = await topicService.getTopics({
         page: pagination.page,
         size: pagination.size,
-        sort_by: filters.sort_by,
-        sort_order: filters.sort_order,
-        // Pass only demographic and region filters, as search/sort are already assigned
+        // Always prefer current sortBy/sortOrder unless override requested
+        sort_by: filters?.sort_by,
+        sort_order: filters?.sort_order,
+        // Pass only demographic and region filters
         filters: {
-          demographic: filters.demographic,
-          region: filters.region,
+          demographic: filters?.demographic,
+          region: filters?.region,
         },
         // Don't include search in initial fetch
       });
@@ -65,13 +61,15 @@ const TopicsList = () => {
     } finally {
       setLoading(false);
     }
-  }//, [pagination.page, pagination.size, filters.sort_by, filters.sort_order]);
+  };
 
+  // Effect for initial + sort + pagination changes
   useEffect(() => {
     fetchTopicsInitial();
-  }, []);
+    // eslint-disable-next-line
+  }, [pagination.page, pagination.size]);
 
-  const handleFiltersSubmit = async (e) => {
+  const handleFiltersSubmit = async (e, filters) => {
     e.preventDefault();
     setSearching(true);
     setPagination((prev) => ({ ...prev, page: 1 }));
@@ -82,9 +80,8 @@ const TopicsList = () => {
         page: 1,
         size: pagination.size,
         search: filters.search,
-        sort_by: filters.sort_by,
-        sort_order: filters.sort_order,
-        // Pass only demographic and region filters, as search/sort are already assigned
+        sort_by: sortBy,
+        sort_order: sortOrder,
         filters: {
           demographic: filters.demographic,
           region: filters.region,
@@ -106,34 +103,8 @@ const TopicsList = () => {
     }
   };
 
-  const handleFilterChange = (key, value) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
-
-    // If it's a sort filter (not search), reset to page 1 and refetch
-    if (key !== "search") {
-      setPagination((prev) => ({ ...prev, page: 1 }));
-    }
-  };
-
-  const handleSearchFocus = () => {
-    // Only reload table if there's a search term to clear
-    if (filters.search.trim() !== "") {
-      // Clear search input and reset to show all topics
-      setFilters((prev) => ({ ...prev, search: "" }));
-      setSearching(false);
-      setError(null);
-      // Reset pagination to page 1
-      setPagination((prev) => ({ ...prev, page: 1 }));
-
-      // Refetch all topics to show original data
-      fetchTopicsInitial();
-    }
-  };
-  
-
   const handlePageChange = (newPage) => {
     setPagination((prev) => ({ ...prev, page: newPage }));
-    // This will trigger the useEffect to refetch with the new page
   };
 
   const handleViewResults = (topic) => {
@@ -150,7 +121,7 @@ const TopicsList = () => {
       };
       tab.addEventListener('beforeunload', focusBack);
     }
-  }
+  };
 
   const handleDeleteTopic = (topic) => {
     SwAlert.confirm(
@@ -175,12 +146,11 @@ const TopicsList = () => {
           });
       }
     });
-  }
+  };
 
   const handleScrapTopic = (topic) => {
     logService.getLogsScreenshot({ topic_id: topic.id })
-      .then((response) => {
-        // Optional: handle the screenshot response (e.g., show success message or trigger download)
+      .then(() => {
         SwAlert.success("Scraping triggered!", "A screenshot is being created for this topic.");
       })
       .catch((err) => {
@@ -188,7 +158,7 @@ const TopicsList = () => {
         console.error("Scrap topic error", err);
         SwAlert.error("Failed to trigger scrape for topic.");
       });
-  }
+  };
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString();
@@ -197,49 +167,13 @@ const TopicsList = () => {
   const [showAddTopicForm, setShowAddTopicForm] = useState(false);
   const handleAddTopic = () => {
     setShowAddTopicForm(true);
-  }
+  };
 
   const handleAddTopicSubmit = async (topic) => {
-    // console.log("Topic", topic);
     await topicService.createTopic(topic);
     setShowAddTopicForm(false);
     fetchTopicsInitial();
-  }
-
-  const [demographicValues, setDemographicValues] = useState([]);
-  const [regionValues, setRegionValues] = useState([]);
-
-  const fetchFiltersLists = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const dem_response = await listService.demographics();
-      const dem_items = dem_response?.items?.map((item) => ({label: item, value: item}));
-      setDemographicValues(dem_items);
-      const reg_response = await listService.regions();
-      const reg_items = reg_response?.items?.map((item) => ({label: item, value: item}));
-      setRegionValues(reg_items);
-    } catch (err) {
-      setError("Failed to fetch Filters");
-      console.error("Error fetching filters:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchFiltersLists();
-  }, [fetchFiltersLists]);
-
-  const setFilterValues = (value, type) => {
-    setFilters((prev) => ({
-      ...prev,
-      [type]: value,
-    }));
-  }
-
-
+  };
 
   if (loading) {
     return <SkeletonLoader variant="table" lines={5} className="min-h-64" />;
@@ -263,76 +197,11 @@ const TopicsList = () => {
 
         {/* Search and Filters */}
         <div className="flex flex-col lg:flex-row justify-between mb-6">
-          <form onSubmit={handleFiltersSubmit} className="mb-4 flex flex-col md:flex-row gap-2">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search topics..."
-                value={filters.search}
-                onChange={(e) => handleFilterChange("search", e.target.value)}
-                onFocus={handleSearchFocus}
-                className="w-full pl-3 pr-10 py-2 h-full border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              />
-              <button
-                type="submit"
-                disabled={searching}
-                aria-label="Search"
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-indigo-600 hover:text-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {searching ? (
-                  <LoadingSpinner size="small" />
-                ) : (
-                  <Search className="w-5 h-5" />
-                )}
-              </button>
-            </div>
-            <div className="max-w-[250px]">
-            <MultiSelect
-              // label="Demographic"
-              placeholder="Select age range" 
-              options={demographicValues}
-              value={filters?.demographic}
-              responsive={true}
-              onValueChange={(val) => setFilterValues(val, 'demographic')}
-            />
-            </div>
-            <div className="max-w-[250px]">
-              <MultiSelect 
-                // label="Region"
-                placeholder="Select region"
-                options={regionValues}
-                value={filters?.region}
-                onValueChange={(val) => setFilterValues(val, 'region')}
-              />
-            </div>
-            <Button
-              type="submit"
-              className="px-4 py-2 self-center"
-              disabled={searching}
-            >
-              {searching ? <LoadingSpinner size="small" /> : "Filter"}
-            </Button>
-          </form>
-          <div className="flex gap-4 mb-4">
-            <select
-              value={filters.sort_by}
-              onChange={(e) => handleFilterChange("sort_by", e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <option value="created_at">Created Date</option>
-              {/* <option value="updated_at">Updated Date</option> */}
-              <option value="topic">Topic Name</option>
-            </select>
-
-            <select
-              value={filters.sort_order}
-              onChange={(e) => handleFilterChange("sort_order", e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <option value="desc">Descending</option>
-              <option value="asc">Ascending</option>
-            </select>
-          </div>
+          <TopicFilter
+            handleFiltersSubmit={handleFiltersSubmit}
+            isLoading={loading}
+            error={error}
+          />
         </div>
 
         {error && (
@@ -349,7 +218,9 @@ const TopicsList = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer select-none"
+                  >
                     Topic
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -358,7 +229,9 @@ const TopicsList = () => {
                   {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Last Scrape
                   </th> */}
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer select-none"
+                  >
                     Created
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -370,8 +243,9 @@ const TopicsList = () => {
                 {topics.map((topic) => (
                   <tr key={topic.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900 cursor-pointer"
-                      onClick={() => handleViewResults(topic)}
+                      <div
+                        className="text-sm font-medium text-gray-900 cursor-pointer"
+                        onClick={() => handleViewResults(topic)}
                       >
                         {topic.topic}
                       </div>
@@ -416,7 +290,7 @@ const TopicsList = () => {
                       </button>
                       <button
                         onClick={() => handleDeleteTopic(topic)}
-                        className=" text-red-600 hover:text-red-900 transition-colors duration-200 cursor-pointer" 
+                        className=" text-red-600 hover:text-red-900 transition-colors duration-200 cursor-pointer"
                         title="Delete"
                       >
                         <Trash2Icon />

@@ -106,6 +106,11 @@ const TopicResultsPage = () => {
     setPagination((prev) => ({ ...prev, page: newPage }));
   };
 
+  
+  const handleSorting = (col, val) => {
+    console.log("sorting applied", {col, val});
+  }
+
   if (loading) {
     return (
       <Layout>
@@ -166,6 +171,7 @@ const TopicResultsPage = () => {
             formatPercentage={formatPercentage}
             formatDate={formatDate}
             calculateStats={calculateStats}
+            onSort={handleSorting}
           />
         </div>
       </div>

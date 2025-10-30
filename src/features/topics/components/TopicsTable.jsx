@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { topicService } from "@/shared/services/topicService";
-import { logService } from "@/shared/services/logService";
 import SkeletonLoader from "@/shared/components/SkeletonLoader";
 import LoadingSpinner from "@/shared/components/LoadingSpinner";
-import { Plus, Trash2Icon, CompassIcon, TelescopeIcon, EyeIcon, Search, ArrowDown, ArrowUp } from "lucide-react";
+import { Plus } from "lucide-react";
 import Modal from "@/shared/components/Modal";
 import TopicAddForm from "../pages/TopicAddForm";
-import { MultiSelect } from "@/shared/components/MultiSelect";
-import { Button } from "@/components/ui/button";
 import SwAlert from "@/shared/components/Swal";
 import TopicFilter from "./TopicFilter";
+import { useDebounce } from "@/lib/helpers";
+
+import { columns } from './TopicsTableColumns';
+import { DataTable } from "@/shared/components/dataTable";
 
 const DEFAULT_SORT_BY = "created_at";
 const DEFAULT_SORT_ORDER = "desc";
 
-const TopicsList = () => {
+const TopicsTable = () => {
   const navigate = useNavigate();
   const [topics, setTopics] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,8 +29,16 @@ const TopicsList = () => {
     pages: 0,
   });
 
+  const [filters, setFilters] = useState({
+    search: "",
+    sort_by: null,
+    sort_order: null,
+    demographic: [], 
+    region: [],
+  });
+
   // Only fetch topics on initial load and when pagination or sort changes (not when search changes)
-  const fetchTopicsInitial = async (filters = {}) => {
+  const fetchTopicsInitial = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -37,6 +46,7 @@ const TopicsList = () => {
       const response = await topicService.getTopics({
         page: pagination.page,
         size: pagination.size,
+        search: filters.search,
         // Always prefer current sortBy/sortOrder unless override requested
         sort_by: filters?.sort_by,
         sort_order: filters?.sort_order,
@@ -63,13 +73,15 @@ const TopicsList = () => {
     }
   };
 
+  const fetchDebounceHandler = useDebounce(fetchTopicsInitial, 300)
+
   // Effect for initial + sort + pagination changes
   useEffect(() => {
-    fetchTopicsInitial();
+    fetchDebounceHandler();
     // eslint-disable-next-line
-  }, [pagination.page, pagination.size]);
+  }, [pagination.page, pagination.size, filters]);
 
-  const handleFiltersSubmit = async (e, filters) => {
+  const handleFiltersSubmit = async (e) => {
     e.preventDefault();
     setSearching(true);
     setPagination((prev) => ({ ...prev, page: 1 }));
@@ -80,8 +92,8 @@ const TopicsList = () => {
         page: 1,
         size: pagination.size,
         search: filters.search,
-        sort_by: sortBy,
-        sort_order: sortOrder,
+        sort_by: filters?.sort_by,
+        sort_order: filters?.sort_order,
         filters: {
           demographic: filters.demographic,
           region: filters.region,
@@ -148,22 +160,6 @@ const TopicsList = () => {
     });
   };
 
-  const handleScrapTopic = (topic) => {
-    logService.getLogsScreenshot({ topic_id: topic.id })
-      .then(() => {
-        SwAlert.success("Scraping triggered!", "A screenshot is being created for this topic.");
-      })
-      .catch((err) => {
-        setError("Failed to trigger scrape for topic.");
-        console.error("Scrap topic error", err);
-        SwAlert.error("Failed to trigger scrape for topic.");
-      });
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString();
-  };
-
   const [showAddTopicForm, setShowAddTopicForm] = useState(false);
   const handleAddTopic = () => {
     setShowAddTopicForm(true);
@@ -174,10 +170,22 @@ const TopicsList = () => {
     setShowAddTopicForm(false);
     fetchTopicsInitial();
   };
+  
 
-  if (loading) {
-    return <SkeletonLoader variant="table" lines={5} className="min-h-64" />;
+  const setFilterValues = (value, type) => {
+    setFilters((prev) => ({
+        ...prev,
+        [type]: value,
+    }));
   }
+  const handleSorting = (sort_by, sort_order) => {
+    setFilters((prev) => ({...prev, "sort_by": sort_by}));
+    setFilters((prev) => ({...prev, "sort_order": sort_order ? sort_order : 'desc'}));
+  }
+
+  // if (loading) {
+  //   return <SkeletonLoader variant="table" lines={5} className="min-h-64" />;
+  // }
 
   return (
     <div className="bg-white shadow rounded-lg">
@@ -198,7 +206,9 @@ const TopicsList = () => {
         {/* Search and Filters */}
         <div className="flex flex-col lg:flex-row justify-between mb-6">
           <TopicFilter
-            handleFiltersSubmit={handleFiltersSubmit}
+            handleFiltersSubmit={fetchTopicsInitial}
+            filters={filters}
+            setFilterValues={setFilterValues}
             isLoading={loading}
             error={error}
           />
@@ -211,95 +221,24 @@ const TopicsList = () => {
         )}
 
         {/* Topics Table */}
-        {searching ? (
+        {loading ? (
           <SkeletonLoader variant="table" lines={5} className="min-h-64" />
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer select-none"
-                  >
-                    Topic
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Results
-                  </th>
-                  {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Last Scrape
-                  </th> */}
-                  <th
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer select-none"
-                  >
-                    Created
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {topics.map((topic) => (
-                  <tr key={topic.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div
-                        className="text-sm font-medium text-gray-900 cursor-pointer"
-                        onClick={() => handleViewResults(topic)}
-                      >
-                        {topic.topic}
-                      </div>
-                      {/* <div className="text-sm text-gray-500">
-                        ID: {topic.id}
-                      </div> */}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {topic.topic_results.length} results
-                      </span>
-                    </td>
-                    {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {topic.last_scrape
-                        ? formatDate(topic.last_scrape)
-                        : "Never"}
-                    </td> */}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(topic.created_at)}
-                    </td>
-                    <td className="flex gap-2 items-center px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      {/* <button
-                        className=" text-green-600 hover:text-green-900 transition-colors duration-200 cursor-pointer"
-                        title="Explore Topic"
-                        onClick={() => handleScrapTopic(topic)}
-                      >
-                        <CompassIcon />
-                      </button> */}
-                      <button
-                        className=" text-green-600 hover:text-green-900 transition-colors duration-200 cursor-pointer"
-                        title="Explore Topic"
-                        onClick={() => handleExploreTopic(topic)}
-                      >
-                        <TelescopeIcon />
-                      </button>
-                      <button
-                        onClick={() => handleViewResults(topic)}
-                        className=" text-indigo-600 hover:text-indigo-900 transition-colors duration-200 cursor-pointer"
-                        title="View Results"
-                      >
-                        <EyeIcon />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteTopic(topic)}
-                        className=" text-red-600 hover:text-red-900 transition-colors duration-200 cursor-pointer"
-                        title="Delete"
-                      >
-                        <Trash2Icon />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <DataTable
+              columns={columns}
+              data={topics}
+              defaultSorting={{
+                sort_by: filters.sort_by,
+                sort_order: filters.sort_order || 'desc'
+              }}
+              actions={{
+                handleViewResults,
+                handleExploreTopic,
+                handleDeleteTopic,
+                handleSorting
+              }}
+            />
           </div>
         )}
 
@@ -363,4 +302,4 @@ const TopicsList = () => {
   );
 };
 
-export default TopicsList;
+export default TopicsTable;

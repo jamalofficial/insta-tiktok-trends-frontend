@@ -5,27 +5,30 @@ import { Button } from "@/components/ui/button";
 import LoadingSpinner from "@/shared/components/LoadingSpinner";
 import { SearchIcon } from "lucide-react";
 
-const TopicFilter = ({handleFiltersSubmit, isLoading=false, error=''}) => {
-    const [filters, setFilters] = useState({
-        search: "",
-        sort_by: null,
-        sort_order: null,
-        demographic: [], 
-        region: [],
-      });
+const TopicFilter = ({handleFiltersSubmit, filters, setFilterValues, isLoading=false, error=''}) => {
+    // const [filters, setFilters] = useState({
+    //     search: "",
+    //     sort_by: null,
+    //     sort_order: null,
+    //     demographic: [], 
+    //     region: [],
+    //   });
     
-    const [sortByValues, setSortByValues] = useState([
-        {label: 'Created Date', value: 'created_at'}, 
-        {label: 'Topic Name', value: 'topic'}
-    ]);
-    const [sortOrderValues, setSortOrderValues] = useState([
-        {label: 'Descending', value: 'desc'}, 
-        {label: 'Ascending', value: 'asc'}
-    ]);
+    // const [sortByValues, setSortByValues] = useState([
+    //     {label: 'Created Date', value: 'created_at'}, 
+    //     {label: 'Topic Name', value: 'topic'}
+    // ]);
+    // const [sortOrderValues, setSortOrderValues] = useState([
+    //     {label: 'Descending', value: 'desc'}, 
+    //     {label: 'Ascending', value: 'asc'}
+    // ]);
+    const sortByValues = null;
+    const sortOrderValues = null;
     const [demographicValues, setDemographicValues] = useState([]);
     const [regionValues, setRegionValues] = useState([]);
 
     const submitFilters = (e) => {
+        e.preventDefault();
         handleFiltersSubmit(e, filters);
     }
 
@@ -43,16 +46,11 @@ const TopicFilter = ({handleFiltersSubmit, isLoading=false, error=''}) => {
     }, []);
 
     useEffect(() => {
-        console.log("changing...");
+        // console.log("changing...");
         fetchFiltersLists();
     }, [fetchFiltersLists]);
 
-    const setFilterValues = (value, type) => {
-        setFilters((prev) => ({
-            ...prev,
-            [type]: value,
-        }));
-    }
+    
     return <> 
         <form onSubmit={submitFilters} className="mb-4 flex flex-col md:flex-row gap-2">
             <div className="relative">
@@ -92,25 +90,29 @@ const TopicFilter = ({handleFiltersSubmit, isLoading=false, error=''}) => {
                     onValueChange={(val) => setFilterValues(val, 'region')}
                 />
             </div>
-            <div className="max-w-[250px]">
-                <MultiSelect 
-                    // label="Sort By"
-                    placeholder="Sort By"
-                    selectionMode={'single'}
-                    options={sortByValues}
-                    value={filters.sort_by}
-                    onValueChange={(val) => setFilterValues(val, 'sort_by')}
-                />
-            </div>
-            <div className="max-w-[250px]">
-                <MultiSelect 
-                    // label="Region"
-                    placeholder="Sort Order"
-                    options={sortOrderValues}
-                    value={filters?.sort_order}
-                    onValueChange={(val) => setFilterValues(val, 'sort_order')}
-                />
-            </div>
+            {sortByValues && 
+                <div className="max-w-[250px]">
+                    <MultiSelect 
+                        // label="Sort By"
+                        placeholder="Sort By"
+                        selectionMode={'single'}
+                        options={sortByValues}
+                        value={filters.sort_by}
+                        onValueChange={(val) => setFilterValues(val, 'sort_by')}
+                    />
+                </div>
+            }
+            {sortOrderValues &&
+                <div className="max-w-[250px]">
+                    <MultiSelect 
+                        // label="Region"
+                        placeholder="Sort Order"
+                        options={sortOrderValues}
+                        value={filters?.sort_order}
+                        onValueChange={(val) => setFilterValues(val, 'sort_order')}
+                    />
+                </div>
+            }
             <Button
                 type="submit"
                 className="px-4 py-2 self-center"

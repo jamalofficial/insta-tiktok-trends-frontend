@@ -16,7 +16,7 @@ export class TopicService {
     if (params.search) queryParams.append("search", params.search);
     if (params.sort_by) queryParams.append("sort_by", params.sort_by);
     if (params.sort_order) queryParams.append("sort_order", params.sort_order);
-    console.log("filters", params);
+    // console.log("filters", params);
   // Expected filters object example:
   // {
   //   demographic: ["16-17", "18-24", "25-34", "35+", "4-15", "Others"],

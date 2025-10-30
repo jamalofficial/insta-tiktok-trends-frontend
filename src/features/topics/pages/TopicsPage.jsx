@@ -1,7 +1,8 @@
 import React from "react";
 import Layout from "@/shared/components/Layout";
 import TopicStats from "../components/TopicStats";
-import TopicsList from "../components/TopicsList";
+// import TopicsList from "../components/TopicsList";
+import TopicsTable from "../components/TopicsTable";
 
 const TopicsPage = () => {
   return (
@@ -23,7 +24,8 @@ const TopicsPage = () => {
 
           {/* Topics List */}
           <div className="mb-8">
-            <TopicsList />
+            {/* <TopicsList /> */}
+            <TopicsTable />
           </div>
         </div>
       </div>

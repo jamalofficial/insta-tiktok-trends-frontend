@@ -8,7 +8,7 @@ import TopicInfoCard from "../components/TopicInfoCard";
 import StatisticsSection from "../components/StatisticsSection";
 import ChartsSection from "../components/ChartsSection";
 import SearchFilters from "../components/SearchFilters";
-import ResultsTable from "../components/ResultsTable";
+import ResultsTable from "../components/results/ResultsTable";
 import {
   processLocationData,
   processDemographicData,

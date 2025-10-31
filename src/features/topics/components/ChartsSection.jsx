@@ -16,11 +16,18 @@ const ChartsSection = ({
 }) => {
   if (!results || results.length === 0) return null;
 
+  const processedLocationData = processLocationData ? processLocationData(results) : [];
+  const processedDemographicData = processDemographicData ? processDemographicData(results) : [];
+  const processedKeywordPopularityData = processKeywordPopularity ? processKeywordPopularity(results) : [];
+  const processedTrendData = processTrendData ? processTrendData(results) : [];
+
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       {/* Location Distribution */}
-      {showLocations && <PieChart
-        data={processLocationData(results)}
+      {(showLocations && processedLocationData?.length > 0) && 
+      <PieChart
+        data={processedLocationData}
         dataKey="value"
         nameKey="name"
         title="Location Distribution"
@@ -29,8 +36,9 @@ const ChartsSection = ({
       }
 
       {/* Demographic Distribution */}
-      {showDemographics && <PieChart
-        data={processDemographicData(results)}
+      {(showDemographics && processedDemographicData?.length > 0) && 
+      <PieChart
+        data={processedDemographicData}
         dataKey="value"
         nameKey="name"
         title="Demographic Distribution"
@@ -39,8 +47,9 @@ const ChartsSection = ({
       }
 
       {/* Keyword Popularity */}
-      {showPopularity && <BarChart
-        data={processKeywordPopularity(results)}
+      {(showPopularity && processedKeywordPopularityData?.length > 0) && 
+      <BarChart
+        data={processedKeywordPopularityData}
         dataKey="popularity"
         nameKey="name"
         title="Top Keywords by Popularity"
@@ -50,8 +59,9 @@ const ChartsSection = ({
       }
 
       {/* Trend Analysis */}
-      {showTrends && <LineChart
-        data={processTrendData(results)}
+      {(showTrends && processedTrendData.length > 0) && 
+      <LineChart
+        data={processedTrendData}
         dataKey="increase"
         nameKey="keyword"
         title="Top Trending Keywords"

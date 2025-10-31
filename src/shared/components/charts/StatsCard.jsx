@@ -15,6 +15,8 @@ const StatsCard = ({
     orange: "bg-orange-500 text-white",
     red: "bg-red-500 text-white",
     indigo: "bg-indigo-500 text-white",
+    yellow: "bg-yellow-400 text-white",      // warning
+    gray: "bg-gray-400 text-white",          // neutral
   };
 
   // Helper to check if value is numeric and format it compactly with k, M, B

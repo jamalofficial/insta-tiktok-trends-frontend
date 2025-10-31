@@ -3,7 +3,7 @@ import listService from "@/shared/services/listService";
 import { MultiSelect } from "@/shared/components/MultiSelect";
 import { Button } from "@/components/ui/button";
 import LoadingSpinner from "@/shared/components/LoadingSpinner";
-import { SearchIcon } from "lucide-react";
+import { SearchIcon, LoaderCircleIcon } from "lucide-react";
 
 const TopicFilter = ({handleFiltersSubmit, filters, setFilterValues, isLoading=false, error=''}) => {
     // const [filters, setFilters] = useState({
@@ -52,7 +52,7 @@ const TopicFilter = ({handleFiltersSubmit, filters, setFilterValues, isLoading=f
 
     
     return <> 
-        <form onSubmit={submitFilters} className="mb-4 flex flex-col md:flex-row gap-2">
+        <form onSubmit={submitFilters} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <div className="relative">
                 <input
                     type="text"
@@ -60,16 +60,16 @@ const TopicFilter = ({handleFiltersSubmit, filters, setFilterValues, isLoading=f
                     value={filters.search}
                     onChange={(e) => setFilterValues(e.target.value, "search")}
                     // onFocus={handleSearchFocus}
-                    className="w-full pl-3 pr-10 py-2 h-full border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 />
-                <button
+                {/* <button
                     type="submit"
                     disabled={isLoading}
                     aria-label="Search"
                     className="absolute inset-y-0 right-0 flex items-center pr-3 text-indigo-600 hover:text-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <SearchIcon className="w-5 h-5" />
-                </button>
+                </button> */}
             </div>
             <div className="max-w-[250px]">
                 <MultiSelect
@@ -113,13 +113,19 @@ const TopicFilter = ({handleFiltersSubmit, filters, setFilterValues, isLoading=f
                     />
                 </div>
             }
-            <Button
+            <button
+            type="submit"
+            className="px-4 py-2 text-center bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-md hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200"
+            >
+                {isLoading ? <LoaderCircleIcon className="text-white animate-spin w-full" /> : "Filter"}
+            </button>
+            {/* <Button
                 type="submit"
                 className="px-4 py-2 self-center"
                 disabled={isLoading}
             >
                 {isLoading ? <LoadingSpinner size="small" /> : "Filter"}
-            </Button>
+            </Button> */}
         </form>
     </>
 }

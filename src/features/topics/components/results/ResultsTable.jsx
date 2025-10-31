@@ -1,259 +1,112 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { topicService } from "@/shared/services/topicService";
-import SkeletonLoader from "@/shared/components/SkeletonLoader";
+import React, {useState, useEffect} from "react";
+import {
+  processLocationData,
+  processDemographicData,
+  // processKeywordPopularity,
+  // processTrendData,
+  calculateStats,
+} from "../../utils/dataProcessing";
 
-const TopicResults = ({ topicId, topicName, onClose }) => {
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [pagination, setPagination] = useState({
-    page: 1,
-    size: 20,
-    total: 0,
-    pages: 0,
+import StatisticsSection from "../StatisticsSection";
+import ChartsSection from "../ChartsSection";
+
+
+import { columns } from "./TopicResultsColumns";
+import { DataTable } from "@/shared/components/dataTable";
+
+import { Dialog, DialogContent, DialogClose, DialogTitle } from "@/components/ui/dialog";
+
+const ResultsTable = ({
+  results,
+  pagination,
+  handlePageChange,
+  formatNumber,
+  formatPercentage,
+  formatDate,
+  onSort=null
+}) => {
+  const [detailsView, setDetailsView] = useState(null);
+  const ToggleDetails = (result) => {
+    if(result?.id == detailsView?.id) setDetailsView(null);
+    else setDetailsView(result);
+  }
+
+  // Sorting: Support for keyword, popularity, trend increase columns
+  // Sorting state (field and order)
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: "asc", // or "desc"
   });
+
+  // Handle column header click
+  const handleSort = (columnKey) => {
+    let direction = "asc";
+    if (sortConfig.key === columnKey && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key: columnKey, direction });
+    if (onSort) onSort(columnKey, direction);
+  };
+
+  // Apply sorting locally if onSort isn't provided
+  const sortedResults = React.useMemo(() => {
+    if (!sortConfig.key) return results;
+    const sortField = sortConfig.key;
+    const sorted = [...results].sort((a, b) => {
+      if (sortField === "relevant_keyword") {
+        // String comparison (case insensitive)
+        return sortConfig.direction === "asc"
+          ? a.relevant_keyword.localeCompare(b.relevant_keyword, undefined, { sensitivity: "base" })
+          : b.relevant_keyword.localeCompare(a.relevant_keyword, undefined, { sensitivity: "base" });
+      } else if (sortField === "search_popularity" || sortField === "search_increase") {
+        // Numeric comparison
+        const aVal = +a[sortField] || 0;
+        const bVal = +b[sortField] || 0;
+        return sortConfig.direction === "asc" ? aVal - bVal : bVal - aVal;
+      }
+      return 0;
+    });
+    return sorted;
+  }, [results, sortConfig]);
+
+  // Helpers for rendering sort indicators
+  const renderSortIndicator = (columnKey) => {
+    if (sortConfig.key !== columnKey) return <span className="ml-1 opacity-40">⇅</span>;
+    return (
+      <span className="ml-1">
+        {sortConfig.direction === "asc" ? "↑" : "↓"}
+      </span>
+    );
+  };
+
   const [filters, setFilters] = useState({
     search: "",
-    min_popularity: "",
-    max_popularity: "",
-    sort_by: "created_at",
-    sort_order: "desc",
+    sort_by: null,
+    sort_order: null,
+    demographic: [], 
+    region: [],
   });
-
-  const fetchResults = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const params = {
-        page: pagination.page,
-        size: pagination.size,
-        ...filters,
-      };
-
-      // Remove empty string values
-      Object.keys(params).forEach((key) => {
-        if (params[key] === "") {
-          delete params[key];
-        }
-      });
-
-      const response = await topicService.getTopicResults(topicId, params);
-
-      setResults(response.items);
-      setPagination({
-        page: response.page,
-        size: response.size,
-        total: response.total,
-        pages: response.pages,
-      });
-    } catch (err) {
-      setError("Failed to fetch results");
-      console.error("Error fetching results:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, [topicId, pagination.page, pagination.size, filters]);
-
   useEffect(() => {
-    if (topicId) {
-      fetchResults();
-    }
-  }, [topicId, fetchResults]);
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setPagination((prev) => ({ ...prev, page: 1 }));
-    fetchResults();
-  };
-
-  const handleFilterChange = (key, value) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const handlePageChange = (newPage) => {
-    setPagination((prev) => ({ ...prev, page: newPage }));
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString();
-  };
-
-  const formatNumber = (num) => {
-    if (num === null || num === undefined) return "N/A";
-    return num.toLocaleString();
-  };
-
-  const formatPercentage = (num) => {
-    if (num === null || num === undefined) return "N/A";
-    return `${num.toFixed(1)}%`;
-  };
-
-  if (loading) {
-    return <SkeletonLoader variant="table" lines={5} className="min-h-64" />;
+    console.log("Filters update", filters);
+  }, [filters]);
+  const handleSorting = (sort_by, sort_order) => {
+    setFilters((prev) => ({...prev, "sort_by": sort_by}));
+    setFilters((prev) => ({...prev, "sort_order": sort_order ? sort_order : 'desc'}));
   }
 
   return (
     <div className="bg-white shadow rounded-lg">
       <div className="px-4 py-5 sm:p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg leading-6 font-medium text-gray-900">
-            Results for "{topicName}"
-          </h3>
-          {onClose && (
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          )}
-        </div>
-
-        {/* Search and Filters */}
-        <div className="mb-6">
-          <form
-            onSubmit={handleSearch}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4"
-          >
-            <div>
-              <input
-                type="text"
-                placeholder="Search keywords..."
-                value={filters.search}
-                onChange={(e) => handleFilterChange("search", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-
-            <div>
-              <input
-                type="number"
-                placeholder="Min popularity"
-                value={filters.min_popularity}
-                onChange={(e) =>
-                  handleFilterChange("min_popularity", e.target.value)
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-
-            <div>
-              <input
-                type="number"
-                placeholder="Max popularity"
-                value={filters.max_popularity}
-                onChange={(e) =>
-                  handleFilterChange("max_popularity", e.target.value)
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              Search
-            </button>
-          </form>
-
-          <div className="flex gap-4">
-            <select
-              value={filters.sort_by}
-              onChange={(e) => handleFilterChange("sort_by", e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <option value="created_at">Created Date</option>
-              <option value="search_popularity">Popularity</option>
-              <option value="search_increase">Trend Increase</option>
-              <option value="relevant_keyword">Keyword</option>
-            </select>
-
-            <select
-              value={filters.sort_order}
-              onChange={(e) => handleFilterChange("sort_order", e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <option value="desc">Descending</option>
-              <option value="asc">Ascending</option>
-            </select>
-          </div>
-        </div>
-
-        {error && (
-          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-red-600">{error}</p>
-          </div>
-        )}
-
-        {/* Results Table */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Keyword
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Popularity
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Trend Increase
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Time Period
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Created
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {results.map((result) => (
-                <tr key={result.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      {result.relevant_keyword}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {formatNumber(result.search_popularity)}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {formatPercentage(result.search_increase)}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">
-                      {result.time_period_today
-                        ? formatDate(result.time_period_today)
-                        : "N/A"}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatDate(result.created_at)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        
+        <DataTable 
+          columns={columns} 
+          data={results} 
+          defaultSorting={{
+            sort_by: filters.sort_by,
+            sort_order: filters.sort_order || 'desc'
+          }} 
+          actions={{handleSorting, ToggleDetails}} 
+        />
 
         {/* Pagination */}
         {pagination.pages > 1 && (
@@ -263,7 +116,6 @@ const TopicResults = ({ topicId, topicName, onClose }) => {
               {Math.min(pagination.page * pagination.size, pagination.total)} of{" "}
               {pagination.total} results
             </div>
-
             <div className="flex space-x-2">
               <button
                 onClick={() => handlePageChange(pagination.page - 1)}
@@ -272,7 +124,6 @@ const TopicResults = ({ topicId, topicName, onClose }) => {
               >
                 Previous
               </button>
-
               {Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
                 const pageNum = i + 1;
                 return (
@@ -281,7 +132,7 @@ const TopicResults = ({ topicId, topicName, onClose }) => {
                     onClick={() => handlePageChange(pageNum)}
                     className={`px-3 py-2 text-sm font-medium rounded-md ${
                       pagination.page === pageNum
-                        ? "bg-indigo-600 text-white"
+                        ? "bg-purple-600 text-white"
                         : "text-gray-700 bg-white border border-gray-300 hover:bg-gray-50"
                     }`}
                   >
@@ -289,7 +140,6 @@ const TopicResults = ({ topicId, topicName, onClose }) => {
                   </button>
                 );
               })}
-
               <button
                 onClick={() => handlePageChange(pagination.page + 1)}
                 disabled={pagination.page === pagination.pages}
@@ -300,9 +150,30 @@ const TopicResults = ({ topicId, topicName, onClose }) => {
             </div>
           </div>
         )}
+
+        {/* Details */}
+        <Dialog open={!!detailsView?.id} onOpenChange={open => { if (!open) setDetailsView({}); }}>
+          <DialogContent className="max-w-4xl min-w-[60%] w-full">
+            <DialogTitle>{detailsView?.relevant_keyword}</DialogTitle>
+            <StatisticsSection
+              results={[detailsView]}
+              calculateStats={calculateStats}
+              formatNumber={formatNumber}
+              formatPercentage={formatPercentage}
+            />
+            {/* Charts Section */}
+            <ChartsSection
+              results={[detailsView]}
+              processLocationData={processLocationData}
+              processDemographicData={processDemographicData}
+              showPopularity={false}
+              showTrends={false}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
 };
 
-export default TopicResults;
+export default ResultsTable;

@@ -18,7 +18,7 @@ import {
 
 // Removed TypeScript interface & generics for plain JS usage
 
-export function DataTable({ columns, data, actions, defaultSorting }) {
+export function DataTable({ columns, data, actions, defaultSorting={sort_by: null, sort_order: null} }) {
     const [sorting, setSorting] = React.useState([{
         id: defaultSorting.sort_by,
         desc: defaultSorting?.sort_order == 'desc'
@@ -41,8 +41,11 @@ export function DataTable({ columns, data, actions, defaultSorting }) {
         <TableHeader className="bg-gray-100">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              {headerGroup.headers.map((header) => {
+                const headerTypeBasedClass = (typeof header.column.columnDef.header === "string") ? 'px-6' : ''
+                return (
+                <TableHead key={header.id} className={`py-3 text-left text-sm font-medium text-gray-500 tracking-wider ${headerTypeBasedClass}`}>
+                    {console.log("header", header.column.columnDef)}
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -50,7 +53,8 @@ export function DataTable({ columns, data, actions, defaultSorting }) {
                         header.getContext()
                       )}
                 </TableHead>
-              ))}
+                );
+            })}
             </TableRow>
           ))}
         </TableHeader>

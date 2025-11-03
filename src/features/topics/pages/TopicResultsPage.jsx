@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { topicService } from "../../../shared/services/topicService";
-import Layout from "../../../shared/components/Layout";
-import SkeletonLoader from "../../../shared/components/SkeletonLoader";
-import TopicHeader from "../components/TopicHeader";
+import { topicService } from "@/shared/services/topicService";
+import Layout from "@/shared/components/Layout";
+import SkeletonLoader from "@/shared/components/SkeletonLoader";
+import ResultsHeader from "../components/results/ResultsHeader";
 import TopicInfoCard from "../components/TopicInfoCard";
 import StatisticsSection from "../components/StatisticsSection";
 import ChartsSection from "../components/ChartsSection";
-import SearchFilters from "../components/SearchFilters";
+import SearchFilters from "../components/results/SearchFilters";
 import ResultsTable from "../components/results/ResultsTable";
 import {
   processLocationData,
@@ -106,10 +106,6 @@ const TopicResultsPage = () => {
     setPagination((prev) => ({ ...prev, page: newPage }));
   };
 
-  
-  const handleSorting = (col, val) => {
-    console.log("sorting applied", {col, val});
-  }
 
   if (loading) {
     return (
@@ -126,7 +122,7 @@ const TopicResultsPage = () => {
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           {/* Header */}
-          <TopicHeader topic={topic} topicId={topicId} />
+          <ResultsHeader topic={topic} topicId={topicId} />
 
           {/* Topic Info Card */}
           {/* <TopicInfoCard topic={topic} formatDate={formatDate} /> */}
@@ -148,30 +144,9 @@ const TopicResultsPage = () => {
             processTrendData={processTrendData}
           />
 
-          {/* Search and Filters */}
-          <SearchFilters
-            filters={filters}
-            handleFilterChange={handleFilterChange}
-            handleSearch={handleSearch}
-          />
-
-          {/* Error Display */}
-          {error && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
-              <p className="text-red-600">{error}</p>
-            </div>
-          )}
-
           {/* Results Table */}
           <ResultsTable
-            results={results}
-            pagination={pagination}
-            handlePageChange={handlePageChange}
-            formatNumber={formatNumber}
-            formatPercentage={formatPercentage}
-            formatDate={formatDate}
-            calculateStats={calculateStats}
-            onSort={handleSorting}
+            topicId={topicId}
           />
         </div>
       </div>

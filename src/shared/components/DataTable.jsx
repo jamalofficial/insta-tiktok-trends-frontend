@@ -45,7 +45,7 @@ export function DataTable({ columns, data, actions, defaultSorting={sort_by: nul
                 const headerTypeBasedClass = (typeof header.column.columnDef.header === "string") ? 'px-6' : ''
                 return (
                 <TableHead key={header.id} className={`py-3 text-left text-sm font-medium text-gray-500 tracking-wider ${headerTypeBasedClass}`}>
-                    {console.log("header", header.column.columnDef)}
+                    {/* {console.log("header", header.column.columnDef)} */}
                   {header.isPlaceholder
                     ? null
                     : flexRender(

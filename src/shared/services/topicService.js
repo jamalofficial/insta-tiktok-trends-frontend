@@ -61,13 +61,17 @@ export class TopicService {
 
     if (params.page) queryParams.append("page", params.page);
     if (params.size) queryParams.append("size", params.size);
-    if (params.search) queryParams.append("search", params.search);
+    if (params.search) queryParams.append("phrase", params.search);
     if (params.min_popularity)
       queryParams.append("min_popularity", params.min_popularity);
     if (params.max_popularity)
       queryParams.append("max_popularity", params.max_popularity);
     if (params.sort_by) queryParams.append("sort_by", params.sort_by);
     if (params.sort_order) queryParams.append("sort_order", params.sort_order);
+
+    if (params.filters && typeof params.filters === "object") {
+      queryParams.append('filters', JSON.stringify(params.filters));
+    }
 
     const queryString = queryParams.toString();
     const url = queryString

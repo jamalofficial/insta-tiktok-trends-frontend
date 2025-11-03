@@ -7,7 +7,7 @@ import { Plus } from "lucide-react";
 import Modal from "@/shared/components/Modal";
 import TopicAddForm from "../pages/TopicAddForm";
 import SwAlert from "@/shared/components/Swal";
-import TopicFilter from "./TopicFilter";
+import TopicFilters from "./TopicFilters";
 import { useDebounce } from "@/lib/helpers";
 
 import { columns } from './TopicsTableColumns';
@@ -205,7 +205,7 @@ const TopicsTable = () => {
 
         {/* Search and Filters */}
         <div className="flex flex-col lg:flex-row justify-between mb-6">
-          <TopicFilter
+          <TopicFilters
             handleFiltersSubmit={fetchTopicsInitial}
             filters={filters}
             setFilterValues={setFilterValues}

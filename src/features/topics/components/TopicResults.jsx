@@ -12,12 +12,13 @@ const TopicResults = ({ topicId, topicName, onClose }) => {
     total: 0,
     pages: 0,
   });
+
   const [filters, setFilters] = useState({
     search: "",
-    min_popularity: "",
-    max_popularity: "",
-    sort_by: "created_at",
-    sort_order: "desc",
+    sort_by: null,
+    sort_order: null,
+    demographic: [], 
+    region: [],
   });
 
   const fetchResults = useCallback(async () => {

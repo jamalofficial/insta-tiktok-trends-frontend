@@ -2,13 +2,17 @@ import React, {useState, useEffect} from "react";
 import {
   processLocationData,
   processDemographicData,
-  // processKeywordPopularity,
-  // processTrendData,
   calculateStats,
+  formatNumber,
+  formatPercentage,
 } from "../../utils/dataProcessing";
+import SkeletonLoader from "@/shared/components/SkeletonLoader";
+import topicService from "@/shared/services/topicService";
+import { useDebounce } from "@/lib/helpers";
 
 import StatisticsSection from "../StatisticsSection";
 import ChartsSection from "../ChartsSection";
+import SearchFilters from "./SearchFilters";
 
 
 import { columns } from "./TopicResultsColumns";
@@ -17,67 +21,23 @@ import { DataTable } from "@/shared/components/dataTable";
 import { Dialog, DialogContent, DialogClose, DialogTitle } from "@/components/ui/dialog";
 
 const ResultsTable = ({
-  results,
-  pagination,
-  handlePageChange,
-  formatNumber,
-  formatPercentage,
-  formatDate,
-  onSort=null
+  topicId
 }) => {
   const [detailsView, setDetailsView] = useState(null);
   const ToggleDetails = (result) => {
     if(result?.id == detailsView?.id) setDetailsView(null);
     else setDetailsView(result);
   }
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Sorting: Support for keyword, popularity, trend increase columns
-  // Sorting state (field and order)
-  const [sortConfig, setSortConfig] = useState({
-    key: null,
-    direction: "asc", // or "desc"
+  const [pagination, setPagination] = useState({
+    page: 1,
+    size: 20,
+    total: 0,
+    pages: 0,
   });
-
-  // Handle column header click
-  const handleSort = (columnKey) => {
-    let direction = "asc";
-    if (sortConfig.key === columnKey && sortConfig.direction === "asc") {
-      direction = "desc";
-    }
-    setSortConfig({ key: columnKey, direction });
-    if (onSort) onSort(columnKey, direction);
-  };
-
-  // Apply sorting locally if onSort isn't provided
-  const sortedResults = React.useMemo(() => {
-    if (!sortConfig.key) return results;
-    const sortField = sortConfig.key;
-    const sorted = [...results].sort((a, b) => {
-      if (sortField === "relevant_keyword") {
-        // String comparison (case insensitive)
-        return sortConfig.direction === "asc"
-          ? a.relevant_keyword.localeCompare(b.relevant_keyword, undefined, { sensitivity: "base" })
-          : b.relevant_keyword.localeCompare(a.relevant_keyword, undefined, { sensitivity: "base" });
-      } else if (sortField === "search_popularity" || sortField === "search_increase") {
-        // Numeric comparison
-        const aVal = +a[sortField] || 0;
-        const bVal = +b[sortField] || 0;
-        return sortConfig.direction === "asc" ? aVal - bVal : bVal - aVal;
-      }
-      return 0;
-    });
-    return sorted;
-  }, [results, sortConfig]);
-
-  // Helpers for rendering sort indicators
-  const renderSortIndicator = (columnKey) => {
-    if (sortConfig.key !== columnKey) return <span className="ml-1 opacity-40">⇅</span>;
-    return (
-      <span className="ml-1">
-        {sortConfig.direction === "asc" ? "↑" : "↓"}
-      </span>
-    );
-  };
 
   const [filters, setFilters] = useState({
     search: "",
@@ -86,27 +46,110 @@ const ResultsTable = ({
     demographic: [], 
     region: [],
   });
+
+  const handlePageChange = (newPage) => {
+    setPagination((prev) => ({ ...prev, page: newPage }));
+  };
+
+  const fetchResults = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const params = {
+        page: pagination.page,
+        size: pagination.size,
+        search: filters.search,
+        sort_by: filters?.sort_by,
+        sort_order: filters?.sort_order,
+        filters: {
+          demographic: filters.demographic,
+          region: filters.region,
+        },
+      };
+      console.log("filters", filters, params);
+
+      // Remove empty string values
+      Object.keys(params).forEach((key) => {
+        if (params[key] === "") {
+          delete params[key];
+        }
+      });
+
+      const response = await topicService.getTopicResults(topicId, params);
+
+      setResults(response.items);
+      setPagination({
+        page: response.page,
+        size: response.size,
+        total: response.total,
+        pages: response.pages,
+      });
+    } catch (err) {
+      setError("Failed to fetch results");
+      console.error("Error fetching results:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchDebounceHandler = useDebounce(fetchResults, 300)
+
   useEffect(() => {
-    console.log("Filters update", filters);
-  }, [filters]);
+    fetchDebounceHandler();
+    // eslint-disable-next-line
+  }, [topicId, pagination.page, pagination.size, filters]);
+
+  
+  const setFilterValues = (value, type) => {
+    setFilters((prev) => ({
+        ...prev,
+        [type]: value,
+    }));
+  }
   const handleSorting = (sort_by, sort_order) => {
     setFilters((prev) => ({...prev, "sort_by": sort_by}));
     setFilters((prev) => ({...prev, "sort_order": sort_order ? sort_order : 'desc'}));
   }
 
   return (
+
     <div className="bg-white shadow rounded-lg">
+      
       <div className="px-4 py-5 sm:p-6">
-        
-        <DataTable 
-          columns={columns} 
-          data={results} 
-          defaultSorting={{
-            sort_by: filters.sort_by,
-            sort_order: filters.sort_order || 'desc'
-          }} 
-          actions={{handleSorting, ToggleDetails}} 
-        />
+        <div className="flex flex-col lg:flex-row justify-between mb-6">
+          <SearchFilters
+              handleFiltersSubmit={fetchResults}
+              filters={filters}
+              setFilterValues={setFilterValues}
+              isLoading={loading}
+              error={error}
+          />
+        </div>
+
+          {/* Error Display */}
+          {error && (
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-red-600">{error}</p>
+            </div>
+          )}
+
+        {/* Topics Table */}
+        {(loading) ? (
+          <SkeletonLoader variant="datatable" lines={10} className="min-h-64" height={"h-auto"} />
+        ) : (
+          <div className="overflow-x-auto">
+            <DataTable 
+              columns={columns} 
+              data={results} 
+              defaultSorting={{
+                sort_by: filters.sort_by,
+                sort_order: filters.sort_order || 'desc'
+              }} 
+              actions={{handleSorting, ToggleDetails}} 
+            />
+          </div>
+        )}
 
         {/* Pagination */}
         {pagination.pages > 1 && (

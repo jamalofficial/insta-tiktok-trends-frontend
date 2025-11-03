@@ -1,4 +1,5 @@
 import React from "react";
+import { DataTable } from "@/shared/components/dataTable";
 
 const SkeletonLoader = ({
   variant = "text",
@@ -6,6 +7,7 @@ const SkeletonLoader = ({
   height = "h-4",
   className = "",
   lines = 1,
+  cells = 5,
 }) => {
   const baseClasses = "animate-pulse bg-gray-200 rounded";
 
@@ -19,6 +21,27 @@ const SkeletonLoader = ({
             <div className="h-3 bg-gray-300 rounded w-5/6"></div>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if(variant == "datatable"){
+    const columns = Array.from({ length: cells })
+      .map((_, i) => ({
+        id: `column-${i}`, 
+        accessorKey: `column-${i}`, 
+        header: <div className="h-4 bg-gray-300 rounded"></div>,
+        cell: <div className="h-4 bg-gray-300 rounded"></div>
+      }));
+    const data = Array.from({ length: lines }).map((_, i) => ({
+      id: `column-${i}`
+    }));
+    return (
+      <div className={`${baseClasses} ${width} ${height} ${className}`}>
+        <DataTable 
+          columns={columns}
+          data={data}
+          />
       </div>
     );
   }
@@ -37,7 +60,7 @@ const SkeletonLoader = ({
             {/* Table rows */}
             {Array.from({ length: lines }).map((_, i) => (
               <div key={i} className="grid grid-cols-5 gap-4">
-                {Array.from({ length: 5 }).map((_, j) => (
+                {Array.from({ length: cells }).map((_, j) => (
                   <div key={j} className="h-4 bg-gray-300 rounded"></div>
                 ))}
               </div>

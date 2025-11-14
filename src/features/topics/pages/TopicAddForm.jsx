@@ -1,14 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import listService from "@/shared/services/listService";
+import { MultiSelect } from "@/shared/components/MultiSelect";
 
 // Zod schema for validation
 const topicSchema = z.object({
   topic: z
     .string()
     .min(2, "Topic must be at least 2 characters")
-    .max(100, "Topic must be at most 100 characters"),
+    .max(100, "Topic must be at most 100 characters")
+    .nonempty("Topic is required"),
+  platform: z
+    .string()
+    .min(2, "Platform must be at least 2 characters")
+    .max(50, "Platform must be at most 50 characters")
+    .nonempty("Platform is required"),
 });
 
 const TopicAddForm = ({ onSubmit, isLoading = false, error = null }) => {
@@ -17,12 +25,24 @@ const TopicAddForm = ({ onSubmit, isLoading = false, error = null }) => {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    setValue,
+    watch,
   } = useForm({
     resolver: zodResolver(topicSchema),
     defaultValues: {
       topic: "",
+      platform: ""
     },
   });
+
+  const [platforms, setPlatforms] = useState([]);
+  useEffect(() => {
+    const setPlatformValues = async () => {
+      const _platforms = await listService.platforms();
+      setPlatforms(_platforms?.items?.map((item) => ({label: item, value: item})));
+    }
+    setPlatformValues();
+  }, []);
 
   const submitHandler = async (data) => {
     await onSubmit?.(data);
@@ -51,6 +71,21 @@ const TopicAddForm = ({ onSubmit, isLoading = false, error = null }) => {
         />
         {errors.topic && (
           <p className="text-red-500 text-xs mt-1">{errors.topic.message}</p>
+        )}
+      </div>
+      <div className="mb-4">
+        <label htmlFor="platform" className="block text-sm font-medium text-gray-700 mb-1">
+          Platform
+        </label>
+        <MultiSelect 
+            placeholder="Select platform"
+            options={platforms}
+            value={watch("platform")}
+            onValueChange={val => setValue("platform", val, { shouldValidate: true })}
+            selectionMode='single'
+        />
+        {errors.platform && (
+          <p className="text-red-500 text-xs mt-1">{errors.platform.message}</p>
         )}
       </div>
       {error && (

@@ -21,6 +21,7 @@ import TopicResultsPage from "./features/topics/pages/TopicResultsPage";
 import TopicAddForm from "./features/topics/pages/TopicAddForm";
 import CategoriesPage from "./features/categories/pages/CategoriesPage";
 import { useAuth } from "./shared/hooks/useAuth";
+import TopKeywordsPage from "./features/topKeywords/pages/TopKeywordsPage";
 
 const Middleware = ({children}) => {
    return <>{children}</>;
@@ -65,6 +66,11 @@ function App() {
                   <TopicsPage />
                 </ProtectedRoute>
               } />
+              <Route path="/top-kw" element={
+                <ProtectedRoute>
+                  <TopKeywordsPage />
+                </ProtectedRoute>
+              } />
               <Route path="/analytics" element={
                 <ProtectedRoute>
                   <AnalyticsPage />
@@ -98,7 +104,7 @@ function App() {
                 </ProtectedRoute>
               } />
               {/* Home page */}
-              <Route path="/" element={<HomePage />} />
+              {/* <Route path="/" element={<HomePage />} /> */}
               {/* Catch all - redirect to dashboard */}
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>

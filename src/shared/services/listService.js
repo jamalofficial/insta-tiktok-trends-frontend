@@ -10,6 +10,10 @@ export class ListService {
     async regions() {
         return await apiService.get(`/lists/regions`);
     }
+    // Get platforms list
+    async platforms() {
+        return await apiService.get(`/lists/platforms`);
+    }
 }
 
 export const listService = new ListService();

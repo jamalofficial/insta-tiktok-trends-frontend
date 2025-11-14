@@ -941,7 +941,7 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
 								<CommandEmpty>
 									{emptyIndicator || "No results found."}
 								</CommandEmpty>{" "}
-								{!hideSelectAll && !searchValue && (
+								{!hideSelectAll && !searchValue && selectionMode !== 'single' && (
 									<CommandGroup>
 										<CommandItem
 											key="all"

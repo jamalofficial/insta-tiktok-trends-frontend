@@ -35,7 +35,7 @@ const TopicsTable = () => {
     sort_order: null,
     demographic: [], 
     region: [],
-    platform: null,
+    platform: [],
   });
 
   // Only fetch topics on initial load and when pagination or sort changes (not when search changes)

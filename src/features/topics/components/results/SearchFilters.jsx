@@ -68,7 +68,7 @@ const SearchFilters = ({handleFiltersSubmit, filters, setFilterValues, isLoading
                     onValueChange={(val) => setFilterValues(val, 'region')}
                 />
             </div>
-            <div className="max-w-[250px]">
+            {/* <div className="max-w-[250px]">
                 <MultiSelect 
                     // label="Region"
                     placeholder="Select platform"
@@ -77,7 +77,7 @@ const SearchFilters = ({handleFiltersSubmit, filters, setFilterValues, isLoading
                     selectionMode={'single'}
                     onValueChange={(val) => setFilterValues(val, 'platform')}
                 />
-            </div>
+            </div> */}
             {sortByValues && 
                 <div className="max-w-[250px]">
                     <MultiSelect 

@@ -45,7 +45,7 @@ const ResultsTable = ({
     sort_order: null,
     demographic: [], 
     region: [],
-    platform: null,
+    platform: [],
   });
 
   const handlePageChange = (newPage) => {

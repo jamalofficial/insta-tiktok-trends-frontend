@@ -1,5 +1,5 @@
 import React from "react";
-import { DataTable } from "@/shared/components/dataTable";
+import { DataTable } from "@/shared/components/DataTable";
 
 const SkeletonLoader = ({
   variant = "text",

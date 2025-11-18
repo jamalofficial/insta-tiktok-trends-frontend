@@ -40,7 +40,7 @@ const SearchFilters = ({handleFiltersSubmit, filters, setFilterValues, isLoading
 
     
     return <> 
-        <form onSubmit={submitFilters} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <form onSubmit={submitFilters} className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
             <div className="relative">
                 <Input
                     type="text"
@@ -74,6 +74,7 @@ const SearchFilters = ({handleFiltersSubmit, filters, setFilterValues, isLoading
                     placeholder="Select platform"
                     options={platformValues}
                     value={filters?.platform}
+                    selectionMode={'single'}
                     onValueChange={(val) => setFilterValues(val, 'platform')}
                 />
             </div>

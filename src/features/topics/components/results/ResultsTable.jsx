@@ -45,6 +45,7 @@ const ResultsTable = ({
     sort_order: null,
     demographic: [], 
     region: [],
+    platform: null,
   });
 
   const handlePageChange = (newPage) => {
@@ -65,6 +66,7 @@ const ResultsTable = ({
         filters: {
           demographic: filters.demographic,
           region: filters.region,
+          platform: filters.platform
         },
       };
       console.log("filters", filters, params);

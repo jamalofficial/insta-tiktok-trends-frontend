@@ -10,6 +10,7 @@ const TopicFilters = ({handleFiltersSubmit, filters, setFilterValues, isLoading=
     const sortOrderValues = null;
     const [demographicValues, setDemographicValues] = useState([]);
     const [regionValues, setRegionValues] = useState([]);
+    const [platformValues, setPlatformValues] = useState([]);
 
     const submitFilters = (e) => {
         e.preventDefault();
@@ -24,6 +25,9 @@ const TopicFilters = ({handleFiltersSubmit, filters, setFilterValues, isLoading=
             const reg_response = await listService.regions();
             const reg_items = reg_response?.items?.map((item) => ({label: item, value: item}));
             setRegionValues(reg_items);
+            const pf_response = await listService.platforms();
+            const pf_items = pf_response?.items?.map((item) => ({label: item, value: item}));
+            setPlatformValues(pf_items);
         } catch (err) {
             console.error("Error fetching filters:", err);
         }
@@ -36,7 +40,7 @@ const TopicFilters = ({handleFiltersSubmit, filters, setFilterValues, isLoading=
 
     
     return <> 
-        <form onSubmit={submitFilters} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <form onSubmit={submitFilters} className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
             <div className="relative">
                 <Input
                     type="text"
@@ -62,6 +66,16 @@ const TopicFilters = ({handleFiltersSubmit, filters, setFilterValues, isLoading=
                     options={regionValues}
                     value={filters?.region}
                     onValueChange={(val) => setFilterValues(val, 'region')}
+                />
+            </div>
+            <div className="max-w-[250px]">
+                <MultiSelect 
+                    // label="Region"
+                    placeholder="Select platform"
+                    options={platformValues}
+                    value={filters?.platform}
+                    selectionMode={'single'}
+                    onValueChange={(val) => setFilterValues(val, 'platform')}
                 />
             </div>
             {sortByValues && 

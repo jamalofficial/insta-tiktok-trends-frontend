@@ -11,7 +11,7 @@ import TopicFilters from "./TopicFilters";
 import { useDebounce } from "@/lib/helpers";
 
 import { columns } from './TopicsTableColumns';
-import { DataTable } from "@/shared/components/dataTable";
+import { DataTable } from "@/shared/components/DataTable";
 
 const DEFAULT_SORT_BY = "created_at";
 const DEFAULT_SORT_ORDER = "desc";

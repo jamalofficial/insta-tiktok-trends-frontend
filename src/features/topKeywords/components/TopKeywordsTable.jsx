@@ -7,7 +7,7 @@ import {
   formatPercentage,
 } from "../utils/dataProcessing";
 import SkeletonLoader from "@/shared/components/SkeletonLoader";
-import topKeywordService from "@/shared/services/topKeywordService";
+import topKeywordService from "@/shared/services/TopKeywordService";
 import { useDebounce } from "@/lib/helpers";
 
 import StatisticsSection from "./StatisticsSection";

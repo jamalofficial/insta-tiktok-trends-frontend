@@ -55,6 +55,7 @@ const TopicsTable = () => {
         filters: {
           demographic: filters?.demographic,
           region: filters?.region,
+          platform: filters?.platform,
         },
         // Don't include search in initial fetch
       });

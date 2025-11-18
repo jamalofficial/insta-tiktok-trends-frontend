@@ -66,7 +66,7 @@ const ResultsTable = ({
         filters: {
           demographic: filters.demographic,
           region: filters.region,
-          platform: filters.platform
+          platform: filters.platform,
         },
       };
       console.log("filters", filters, params);

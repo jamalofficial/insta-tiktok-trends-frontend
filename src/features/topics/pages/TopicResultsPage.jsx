@@ -4,20 +4,13 @@ import { topicService } from "@/shared/services/topicService";
 import Layout from "@/shared/components/Layout";
 import SkeletonLoader from "@/shared/components/SkeletonLoader";
 import ResultsHeader from "../components/results/ResultsHeader";
-import TopicInfoCard from "../components/TopicInfoCard";
-import StatisticsSection from "../components/StatisticsSection";
 import ChartsSection from "../components/ChartsSection";
-import SearchFilters from "../components/results/SearchFilters";
 import ResultsTable from "../components/results/ResultsTable";
 import {
   processLocationData,
   processDemographicData,
   processKeywordPopularity,
   processTrendData,
-  calculateStats,
-  formatDate,
-  formatNumber,
-  formatPercentage,
 } from "../utils/dataProcessing";
 
 const TopicResultsPage = () => {
@@ -92,20 +85,6 @@ const TopicResultsPage = () => {
     }
   }, [topicId, fetchTopic, fetchResults]);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setPagination((prev) => ({ ...prev, page: 1 }));
-    fetchResults();
-  };
-
-  const handleFilterChange = (key, value) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const handlePageChange = (newPage) => {
-    setPagination((prev) => ({ ...prev, page: newPage }));
-  };
-
 
   if (loading) {
     return (
@@ -123,17 +102,6 @@ const TopicResultsPage = () => {
         <div className="px-4 py-6 sm:px-0">
           {/* Header */}
           <ResultsHeader topic={topic} topicId={topicId} />
-
-          {/* Topic Info Card */}
-          {/* <TopicInfoCard topic={topic} formatDate={formatDate} /> */}
-
-          {/* Statistics Section */}
-          {/* <StatisticsSection
-            results={results}
-            calculateStats={calculateStats}
-            formatNumber={formatNumber}
-            formatPercentage={formatPercentage}
-          /> */}
 
           {/* Charts Section */}
           <ChartsSection

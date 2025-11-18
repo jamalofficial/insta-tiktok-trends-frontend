@@ -1,7 +1,7 @@
 import React from "react";
-import PieChart from "@/shared/components/charts/PieChart";
-import BarChart from "@/shared/components/charts/BarChart";
-import LineChart from "@/shared/components/charts/LineChart";
+import PieChart from "@/shared/components/GoogleCharts/PieChart";
+import BarChart from "@/shared/components/GoogleCharts/BarChart";
+import LineChart from "@/shared/components/GoogleCharts/LineChart";
 
 const ChartsSection = ({
   results,
@@ -20,54 +20,55 @@ const ChartsSection = ({
   const processedDemographicData = processDemographicData ? processDemographicData(results) : [];
   const processedKeywordPopularityData = processKeywordPopularity ? processKeywordPopularity(results) : [];
   const processedTrendData = processTrendData ? processTrendData(results) : [];
+  console.log("display", processedLocationData?.map((item) => [item.name, item.value]));
 
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       {/* Location Distribution */}
       {(showLocations && processedLocationData?.length > 0) && 
-      <PieChart
-        data={processedLocationData}
-        dataKey="value"
-        nameKey="name"
-        title="Location Distribution"
-        height={350}
-      />
+        <PieChart
+          options={{ headers: ["Loaction", "Value"] }}
+          title="Location Distribution"
+          data={ processedLocationData }
+        />
       }
 
       {/* Demographic Distribution */}
       {(showDemographics && processedDemographicData?.length > 0) && 
-      <PieChart
-        data={processedDemographicData}
-        dataKey="value"
-        nameKey="name"
-        title="Demographic Distribution"
-        height={350}
-      />
+        <PieChart
+          options={{ headers: ["Age Group", "Value"]}}
+          title="Demographic Distribution"
+          data={ processedDemographicData }
+        />
       }
 
       {/* Keyword Popularity */}
       {(showPopularity && processedKeywordPopularityData?.length > 0) && 
-      <BarChart
-        data={processedKeywordPopularityData}
-        dataKey="popularity"
-        nameKey="name"
-        title="Top Keywords by Popularity"
-        height={350}
-        color="#8b5cf6"
-      />
+        <BarChart
+          data={processedKeywordPopularityData}
+          title="Top Keywords by Popularity"
+          options={{ 
+            header: ["Keyword", "Popularity"], 
+            labelKey: "name", 
+            matrixKey: "popularity", 
+            valueKey: null, 
+            colors:["#8b5cf6", "#8b5c00"]
+          }}
+        />
       }
 
       {/* Trend Analysis */}
       {(showTrends && processedTrendData.length > 0) && 
-      <LineChart
-        data={processedTrendData}
-        dataKey="increase"
-        nameKey="keyword"
-        title="Top Trending Keywords"
-        height={350}
-        color="#06b6d4"
-      />
+        <LineChart
+          data={processedTrendData}
+          options={{
+            header: ["keyword", 'increase'], 
+            labelKey:'keyword', valueKey: 'increase', 
+            colors: ["#8b5cf6"]
+          }}
+          title="Top Trending Keywords"
+        />
       }
     </div>
   );

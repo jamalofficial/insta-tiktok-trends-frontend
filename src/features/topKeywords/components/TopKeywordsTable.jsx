@@ -30,10 +30,11 @@ const TopKeywordsTable = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const [pagination, setPagination] = useState({
     page: 1,
-    size: 20,
+    size: itemsPerPage,
     total: 0,
     pages: 0,
   });
@@ -57,13 +58,14 @@ const TopKeywordsTable = () => {
 
       const params = {
         page: pagination.page,
-        size: pagination.size,
+        size: itemsPerPage, // pagination.size,
         search: filters.search,
         sort_by: filters?.sort_by,
         sort_order: filters?.sort_order,
         filters: {
           demographic: filters.demographic,
           region: filters.region,
+          platform: filters.platform,
         },
       };
       console.log("filters", filters, params);

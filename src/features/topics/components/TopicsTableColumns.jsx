@@ -102,13 +102,13 @@ const columns = [
                 >
                 <EyeIcon />
                 </button>
-                <button
+                {/* <button
                 onClick={() => actions.handleDeleteTopic(topic)}
                 className=" text-red-600 hover:text-red-900 transition-colors duration-200 cursor-pointer"
                 title="Delete"
                 >
                 <Trash2Icon />
-                </button>
+                </button> */}
             </div>
         );
     }

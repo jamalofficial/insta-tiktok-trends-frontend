@@ -16,7 +16,7 @@ import SearchFilters from "./SearchFilters";
 
 
 import { columns } from "./TopicResultsColumns";
-import { DataTable } from "@/shared/components/dataTable";
+import { DataTable } from "@/shared/components/DataTable";
 
 import { Dialog, DialogContent, DialogClose, DialogTitle } from "@/components/ui/dialog";
 

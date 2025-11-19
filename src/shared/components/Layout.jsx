@@ -5,11 +5,11 @@ const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="h-auto bg-gray-50 flex overflow-hidden">
+    <div className="h-screen bg-gray-50 flex overflow-hidden">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col lg:ml-0 overflow-hidden">
+      <div className="flex-1 lg:ml-0 overflow-y-auto max-h-screen">
         {/* Mobile menu button */}
         <div className="lg:hidden">
           <div className="flex items-center justify-between h-16 px-4 bg-white shadow-lg border-b border-gray-200">
@@ -54,8 +54,8 @@ const Layout = ({ children }) => {
         </div>
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto">
-          <div className="p-6 lg:p-8 h-full">{children}</div>
+        <main className="flex flex-col overflow-y-auto">
+          <div className="p-6 lg:p-8 h-full max-h-full">{children}</div>
         </main>
       </div>
     </div>

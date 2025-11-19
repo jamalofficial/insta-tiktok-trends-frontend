@@ -262,7 +262,13 @@
   }
 }
 
-
+body{
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-y: hidden;
+}
 .slim-scroll::-webkit-scrollbar {
   width: 4px;
   height: 4px;

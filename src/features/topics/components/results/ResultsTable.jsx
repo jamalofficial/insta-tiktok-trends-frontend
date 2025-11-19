@@ -12,7 +12,8 @@ import { useDebounce } from "@/lib/helpers";
 
 import StatisticsSection from "../StatisticsSection";
 import ChartsSection from "../ChartsSection";
-import SearchFilters from "./SearchFilters";
+import {SearchFilters, VISIBILITY_OPTIONS} from "@/shared/components/SearchFilters";
+import Pagination from "@/shared/components/Pagination";
 
 
 import { columns } from "./TopicResultsColumns";
@@ -45,7 +46,6 @@ const ResultsTable = ({
     sort_order: null,
     demographic: [], 
     region: [],
-    platform: [],
   });
 
   const handlePageChange = (newPage) => {
@@ -66,7 +66,6 @@ const ResultsTable = ({
         filters: {
           demographic: filters.demographic,
           region: filters.region,
-          platform: filters.platform,
         },
       };
       console.log("filters", filters, params);
@@ -121,6 +120,7 @@ const ResultsTable = ({
       <div className="px-4 py-5 sm:p-6">
         <div className="flex flex-col lg:flex-row justify-between mb-6">
           <SearchFilters
+              visibleOptions={Object.values(VISIBILITY_OPTIONS).filter(item => item != VISIBILITY_OPTIONS.PLATFORM)}
               handleFiltersSubmit={fetchResults}
               filters={filters}
               setFilterValues={setFilterValues}
@@ -154,49 +154,10 @@ const ResultsTable = ({
         )}
 
         {/* Pagination */}
-        {pagination.pages > 1 && (
-          <div className="mt-6 flex items-center justify-between">
-            <div className="text-sm text-gray-700">
-              Showing {(pagination.page - 1) * pagination.size + 1} to{" "}
-              {Math.min(pagination.page * pagination.size, pagination.total)} of{" "}
-              {pagination.total} results
-            </div>
-            <div className="flex space-x-2">
-              <button
-                onClick={() => handlePageChange(pagination.page - 1)}
-                disabled={pagination.page === 1}
-                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Previous
-              </button>
-              {Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
-                const pageNum = i + 1;
-                return (
-                  <button
-                    key={pageNum}
-                    onClick={() => handlePageChange(pageNum)}
-                    className={`px-3 py-2 text-sm font-medium rounded-md ${
-                      pagination.page === pageNum
-                        ? "bg-purple-600 text-white"
-                        : "text-gray-700 bg-white border border-gray-300 hover:bg-gray-50"
-                    }`}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              })}
-              <button
-                onClick={() => handlePageChange(pagination.page + 1)}
-                disabled={pagination.page === pagination.pages}
-                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
-            </div>
-          </div>
-        )}
+        {pagination.pages > 1 && <Pagination pagination={pagination} handlePageChange={handlePageChange} />}
 
         {/* Details */}
+        {!!detailsView?.id &&
         <Dialog open={!!detailsView?.id} onOpenChange={open => { if (!open) setDetailsView({}); }}>
           <DialogContent className="max-w-4xl min-w-[60%] w-full">
             <DialogTitle>{detailsView?.relevant_keyword}</DialogTitle>
@@ -216,6 +177,7 @@ const ResultsTable = ({
             />
           </DialogContent>
         </Dialog>
+        }
       </div>
     </div>
   );

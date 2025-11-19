@@ -7,7 +7,8 @@ import { Plus } from "lucide-react";
 import Modal from "@/shared/components/Modal";
 import TopicAddForm from "../pages/TopicAddForm";
 import SwAlert from "@/shared/components/Swal";
-import TopicFilters from "./TopicFilters";
+import SearchFilters from "@/shared/components/SearchFilters";
+import Pagination from "@/shared/components/Pagination";
 import { useDebounce } from "@/lib/helpers";
 
 import { columns } from './TopicsTableColumns';
@@ -35,7 +36,7 @@ const TopicsTable = () => {
     sort_order: null,
     demographic: [], 
     region: [],
-    platform: [],
+    platform: null,
   });
 
   // Only fetch topics on initial load and when pagination or sort changes (not when search changes)
@@ -208,7 +209,7 @@ const TopicsTable = () => {
 
         {/* Search and Filters */}
         <div className="flex flex-col lg:flex-row justify-between mb-6">
-          <TopicFilters
+          <SearchFilters
             handleFiltersSubmit={fetchTopicsInitial}
             filters={filters}
             setFilterValues={setFilterValues}
@@ -246,50 +247,7 @@ const TopicsTable = () => {
         )}
 
         {/* Pagination */}
-        {!searching && pagination.pages > 1 && (
-          <div className="mt-6 flex items-center justify-between">
-            <div className="text-sm text-gray-700">
-              Showing {(pagination.page - 1) * pagination.size + 1} to{" "}
-              {Math.min(pagination.page * pagination.size, pagination.total)} of{" "}
-              {pagination.total} results
-            </div>
-
-            <div className="flex space-x-2">
-              <button
-                onClick={() => handlePageChange(pagination.page - 1)}
-                disabled={pagination.page === 1}
-                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Previous
-              </button>
-
-              {Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
-                const pageNum = i + 1;
-                return (
-                  <button
-                    key={pageNum}
-                    onClick={() => handlePageChange(pageNum)}
-                    className={`px-3 py-2 text-sm font-medium rounded-md ${
-                      pagination.page === pageNum
-                        ? "bg-indigo-600 text-white"
-                        : "text-gray-700 bg-white border border-gray-300 hover:bg-gray-50"
-                    }`}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              })}
-
-              <button
-                onClick={() => handlePageChange(pagination.page + 1)}
-                disabled={pagination.page === pagination.pages}
-                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
-            </div>
-          </div>
-        )}
+        {!searching && pagination.pages > 1 && <Pagination pagination={pagination} handlePageChange={handlePageChange} />}
       </div>
       {showAddTopicForm && (
         <Modal

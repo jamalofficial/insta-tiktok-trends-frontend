@@ -45,7 +45,7 @@ const columns = [
                 }}
               >
                 {row.getValue("relevant_keyword")}
-                <span className="ml-2 text-xs text-white p-0.5 px-1 bg-indigo-400 rounded-2xl">{result?.platform}</span>
+                <span className="bg-indigo-400 font-normal ml-2 px-1 rounded-2xl text-white text-xs">{result?.platform}</span>
                 {/* {detailsView?.id == result?.id ? "Hide Details" : "Show Details"} */}
               {/* </button> */}
           </div>

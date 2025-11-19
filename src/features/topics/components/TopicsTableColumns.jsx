@@ -35,7 +35,7 @@ const columns = [
             onClick={() => actions.handleViewResults(topic)}
         >
             {row.getValue("topic")}
-            <span className="ml-2 text-xs text-white p-0.5 px-1 bg-indigo-400 rounded-2xl">{topic?.platform}</span>
+            <span className="bg-indigo-400 font-normal ml-2 px-1 rounded-2xl text-white text-xs">{topic?.platform}</span>
         </div>
         );
     }

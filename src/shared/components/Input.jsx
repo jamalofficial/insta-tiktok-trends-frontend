@@ -16,7 +16,7 @@ const Input = ({ label, error, className = "", variant = "accent-purple", ...pro
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full h-full">
       {label && (
         <label className="block text-sm font-medium text-gray-700 mb-1">
           {label}

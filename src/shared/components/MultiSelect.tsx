@@ -68,7 +68,7 @@ const multiSelectVariants = cva("m-1 transition-all duration-300 ease-in-out", {
 	},
 	defaultVariants: {
 		variant: "default",
-		badgeAnimation: "bounce",
+		badgeAnimation: "none",
 	},
 });
 
@@ -720,7 +720,7 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
 										className={cn(
 											"flex items-center gap-1",
 											singleLine
-												? "overflow-x-auto multiselect-singleline-scroll"
+												? "overflow-x-auto multiselect-singleline-scroll slim-scroll"
 												: "flex-wrap",
 											responsiveSettings.compactMode && "gap-0.5"
 										)}

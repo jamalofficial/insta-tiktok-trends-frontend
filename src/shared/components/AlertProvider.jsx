@@ -66,15 +66,17 @@ export const AlertProvider = ({ children }) => {
     <AlertContext.Provider value={value}>
       {children}
       {/* Alert Container */}
-      <div className="fixed top-4 right-4 z-50 space-y-2">
-        {alerts.map((alert) => (
-          <Alert
-            key={alert.id}
-            {...alert}
-            onClose={() => removeAlert(alert.id)}
-          />
-        ))}
-      </div>
+      {alerts?.length > 0 && 
+        <div className="fixed top-4 right-4 z-50 space-y-2">
+          {alerts.map((alert) => (
+            <Alert
+              key={alert.id}
+              {...alert}
+              onClose={() => removeAlert(alert.id)}
+            />
+          ))}
+        </div>
+      }
     </AlertContext.Provider>
   );
 };

@@ -12,7 +12,8 @@ import { useDebounce } from "@/lib/helpers";
 
 import StatisticsSection from "./StatisticsSection";
 import ChartsSection from "./ChartsSection";
-import SearchFilters from "./SearchFilters";
+import SearchFilters from "@/shared/components/SearchFilters";
+import Pagination from "@/shared/components/Pagination";
 
 
 import { columns } from "./TopKeywordsTableColumns";
@@ -21,7 +22,6 @@ import { DataTable } from "@/shared/components/DataTable";
 import { Dialog, DialogContent, DialogClose, DialogTitle } from "@/components/ui/dialog";
 
 const TopKeywordsTable = () => {
-  const [keywordId, setKeywordId] = useState(null);
   const [detailsView, setDetailsView] = useState(null);
   const ToggleDetails = (result) => {
     if(result?.id == detailsView?.id) setDetailsView(null);
@@ -45,6 +45,7 @@ const TopKeywordsTable = () => {
     sort_order: null,
     demographic: [], 
     region: [],
+    platform: null
   });
 
   const handlePageChange = (newPage) => {
@@ -68,7 +69,6 @@ const TopKeywordsTable = () => {
           platform: filters.platform,
         },
       };
-      console.log("filters", filters, params);
 
       // Remove empty string values
       Object.keys(params).forEach((key) => {
@@ -155,47 +155,7 @@ const TopKeywordsTable = () => {
         )}
 
         {/* Pagination */}
-        {pagination.pages > 1 && (
-          <div className="mt-6 flex items-center justify-between">
-            <div className="text-sm text-gray-700">
-              Showing {(pagination.page - 1) * pagination.size + 1} to{" "}
-              {Math.min(pagination.page * pagination.size, pagination.total)} of{" "}
-              {pagination.total} results
-            </div>
-            <div className="flex space-x-2">
-              <button
-                onClick={() => handlePageChange(pagination.page - 1)}
-                disabled={pagination.page === 1}
-                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Previous
-              </button>
-              {Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
-                const pageNum = i + 1;
-                return (
-                  <button
-                    key={pageNum}
-                    onClick={() => handlePageChange(pageNum)}
-                    className={`px-3 py-2 text-sm font-medium rounded-md ${
-                      pagination.page === pageNum
-                        ? "bg-purple-600 text-white"
-                        : "text-gray-700 bg-white border border-gray-300 hover:bg-gray-50"
-                    }`}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              })}
-              <button
-                onClick={() => handlePageChange(pagination.page + 1)}
-                disabled={pagination.page === pagination.pages}
-                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
-            </div>
-          </div>
-        )}
+        {pagination.pages > 1 && <Pagination pagination={pagination} handlePageChange={handlePageChange} />}
 
         {/* Details */}
         <Dialog open={!!detailsView?.id} onOpenChange={open => { if (!open) setDetailsView({}); }}>

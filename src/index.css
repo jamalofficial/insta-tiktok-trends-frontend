@@ -261,3 +261,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+.slim-scroll::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}

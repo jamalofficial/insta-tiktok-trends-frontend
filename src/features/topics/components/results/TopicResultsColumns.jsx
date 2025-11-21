@@ -79,7 +79,7 @@ const columns = [
     }
   },
   {
-    accessorKey: "topic_results",
+    accessorKey: "search_increase",
     header: ({ column, table }) => {
       const { actions } = table.options.meta;
       return (
@@ -100,7 +100,7 @@ const columns = [
     cell: ({ row }) => {
         return (
           <div className="text-sm text-gray-900">
-            {formatPercentage(row.getValue('topic_results'))}
+            {formatPercentage(row.getValue('search_increase'))}
           </div>
         );
     }

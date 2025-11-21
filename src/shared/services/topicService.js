@@ -95,6 +95,10 @@ export class TopicService {
   async deleteTopic(topicId) {
     return await apiService.delete(`${endpoint}/${topicId}`);
   }
+
+  async runTopic(topicId) {
+    return await apiService.post(`${endpoint}/${topicId}/run`);
+  }
 }
 
 export const topicService = new TopicService();

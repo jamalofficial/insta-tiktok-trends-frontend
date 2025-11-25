@@ -84,41 +84,6 @@ const TopicsTable = () => {
     // eslint-disable-next-line
   }, [pagination.page, pagination.size, filters]);
 
-  const handleFiltersSubmit = async (e) => {
-    e.preventDefault();
-    setSearching(true);
-    setPagination((prev) => ({ ...prev, page: 1 }));
-
-    try {
-      setError(null);
-      const response = await topicService.getTopics({
-        page: 1,
-        size: pagination.size,
-        search: filters.search,
-        sort_by: filters?.sort_by,
-        sort_order: filters?.sort_order,
-        filters: {
-          demographic: filters.demographic,
-          region: filters.region,
-          platform: filters.platform
-        },
-      });
-
-      setTopics(response.items);
-      setPagination({
-        page: response.page,
-        size: response.size,
-        total: response.total,
-        pages: response.pages,
-      });
-    } catch (err) {
-      setError("Failed to search topics");
-      console.error("Error searching topics:", err);
-    } finally {
-      setSearching(false);
-    }
-  };
-
   const handlePageChange = (newPage) => {
     setPagination((prev) => ({ ...prev, page: newPage }));
   };
@@ -141,10 +106,25 @@ const TopicsTable = () => {
       }
     }
     else if(["instagram"].includes(topic_platform)){
-      const response = await topicService.runTopic(topic.id);
-      console.log(response);
+      const alert = SwAlert.wait("Please wait...", "While we are gathering information!");
+      await topicService.runTopic(topic.id)
+      .then((resp) => {
+        console.log("response", resp);
+        alert.close();
+        if(resp?.error){
+          SwAlert.error();
+        }
+        else{
+          // Update the topic in the state based on new data from the response
+          setTopics((prevTopics) => prevTopics.map((t) => t.id === topic.id ? { ...t, ...resp?.topic } : t));
+        }
+      });
     }
   };
+
+  useEffect(() => {
+    console.log("updated topics");
+  }, [topics]);
 
   const handleDeleteTopic = (topic) => {
     SwAlert.confirm(

@@ -1,6 +1,7 @@
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import React from 'react';
+import {renderToString} from "react-dom/server";
+import LoadingSpinner from '@/shared/components/LoadingSpinner';
 
 const MySwal = withReactContent(Swal);
 
@@ -13,6 +14,35 @@ const MySwal = withReactContent(Swal);
  *   SwAlert.confirm("Are you sure?", "This action is irreversible!").then(result => { ... });
  */
 const SwAlert = {
+  /**
+   * Show a wait/loading dialog.
+   * @param {string} title
+   * @param {string} message
+   * @param {object} options - Optional additional SweetAlert2 config options.
+   * @returns {Promise<SweetAlertResult>}
+   */
+  wait(title = "Please wait...", message = "Processing your request.", options = {}) {
+    return MySwal.fire({
+      title: <strong>{title}</strong>,
+      html: <i>{message}<LoadingSpinner size="64px" className={"min-h-[80px]"}/></i>,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showCancelButton: false,
+      showConfirmButton: false,
+      showDenyButton: false,
+      didOpen: () => {
+        // MySwal.showLoading();
+        // Mount your React component into the placeholder
+        // const el = document.getElementById("swal-custom-loader");
+        // if (el) {
+        //   const root = ReactDOM.createRoot(el);
+        //   root.render(<LoadingSpinner />);
+        // }
+      },
+      loaderHtml: renderToString(<LoadingSpinner size="64px" className={"min-h-[70px]"}/>), //"<div id='swal-custom-loader'></div>",
+      ...options
+    });
+  },
   /**
    * Show a success alert.
    * @param {string} title

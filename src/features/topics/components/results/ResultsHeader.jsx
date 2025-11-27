@@ -15,8 +15,12 @@ const ResultsHeader = ({ topic, topicId }) => {
           />
             
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            {topic?.topic}
-            <p className="text-xs font-normal">Topic ID <span className="font-semibold ">{topicId}</span></p>
+            {topic?.topic} 
+            <p className="flex font-normal gap-2 items-center text-xs">
+              <span className="bg-indigo-400 font-normal p-1 rounded text-white">{topic?.platform}</span>
+              <span className="border border-gray-400 min-h-6"></span>
+              <span>Topic ID <span className="font-semibold ">{topicId}</span></span>
+            </p>
           </h1>
           {/* <p className="text-lg text-gray-600">
             {topic

@@ -17,9 +17,11 @@ import Pagination from "@/shared/components/Pagination";
 
 
 import { columns } from "./TopicResultsColumns";
+import { columnsInsta } from "./TopicResultsColumnsInsta";
 import { DataTable } from "@/shared/components/DataTable";
 
 import { Dialog, DialogContent, DialogClose, DialogTitle } from "@/components/ui/dialog";
+import { use } from "react";
 
 const ResultsTable = ({
   topicId
@@ -32,6 +34,8 @@ const ResultsTable = ({
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [platform, setPlatform] = useState("TikTok");
+  // const [filtersToHide, setFiltersToHide] = useState([VISIBILITY_OPTIONS.PLATFORM]);
 
   const [pagination, setPagination] = useState({
     page: 1,
@@ -80,6 +84,7 @@ const ResultsTable = ({
       const response = await topicService.getTopicResults(topicId, params);
 
       setResults(response.items);
+      setPlatform(response.items ? response.items[0].platform : 'TikTok');
       setPagination({
         page: response.page,
         size: response.size,
@@ -113,6 +118,16 @@ const ResultsTable = ({
     setFilters((prev) => ({...prev, "sort_order": sort_order ? sort_order : 'desc'}));
   }
 
+  const getColumns = () => {
+    if(platform == "TikTok") {
+      return columns;
+    }
+    else {
+      // setFiltersToHide(prev => ([...prev, ...[VISIBILITY_OPTIONS.REGION, VISIBILITY_OPTIONS.DEMOGRAPHIC]]))
+      return columnsInsta;
+    }
+  }
+
   return (
 
     <div className="bg-white shadow rounded-lg">
@@ -120,7 +135,7 @@ const ResultsTable = ({
       <div className="px-4 py-5 sm:p-6">
         <div className="flex flex-col lg:flex-row justify-between mb-6">
           <SearchFilters
-              visibleOptions={Object.values(VISIBILITY_OPTIONS).filter(item => item != VISIBILITY_OPTIONS.PLATFORM)}
+              visibleOptions={Object.values(VISIBILITY_OPTIONS).filter(item => ![VISIBILITY_OPTIONS.PLATFORM]?.includes(item))}
               handleFiltersSubmit={fetchResults}
               filters={filters}
               setFilterValues={setFilterValues}
@@ -142,7 +157,7 @@ const ResultsTable = ({
         ) : (
           <div className="overflow-x-auto">
             <DataTable 
-              columns={columns} 
+              columns={getColumns()} 
               data={results} 
               defaultSorting={{
                 sort_by: filters.sort_by,

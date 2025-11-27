@@ -106,6 +106,30 @@ const columns = [
     }
   },
   {
+    accessorKey: "demographic_data",
+    header: "Demographics",
+    cell: ({ row }) => {
+        const demo_data = row.getValue('demographic_data');
+        return demo_data?.map(_d => (
+          <div className="text-sm text-gray-900">
+            <span className="font-medium">{_d.name}</span>({_d.value})
+          </div>)
+        );
+    }
+  },
+  {
+    accessorKey: "location_data",
+    header: "Locations",
+    cell: ({ row }) => {
+        const loc_data = row.getValue('location_data');
+        return loc_data?.map(_l => (
+          <div className="text-sm text-gray-900">
+            <span className="font-medium">{_l.name}</span>({_l.value})
+          </div>)
+        );
+    }
+  },
+  {
     accessorKey: "updated_at",
     header: "Last Update",
     cell: ({ row }) => {

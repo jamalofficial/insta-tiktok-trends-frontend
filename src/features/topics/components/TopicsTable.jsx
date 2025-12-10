@@ -94,7 +94,7 @@ const TopicsTable = () => {
 
   const handleExploreTopic = async (topic) => {
     const topic_platform = String(topic.platform ?? 'tiktok').toLowerCase();
-    if (["tiktok"].includes(topic_platform)){
+    if (false && ["tiktok"].includes(topic_platform)){
       const tab = window.open(`https://www.tiktok.com/csi/search?keyword=${topic.topic}#explore=1`, '_blank');
       if (tab) {
         tab.focus();
@@ -105,7 +105,7 @@ const TopicsTable = () => {
         tab.addEventListener('beforeunload', focusBack);
       }
     }
-    else if(["instagram"].includes(topic_platform)){
+    else if(["instagram", "tiktok"].includes(topic_platform)){
       const alert = SwAlert.wait("Please wait...", "While we are gathering information!");
       await topicService.runTopic(topic.id)
       .then((resp) => {

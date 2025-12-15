@@ -111,13 +111,19 @@ const TopicsTable = () => {
       .then((resp) => {
         console.log("response", resp);
         alert.close();
-        if(resp?.error){
-          SwAlert.error();
-        }
-        else{
+        if(resp?.status){
+          SwAlert.success("Scheduled!", "Topic is scheduled to run in the background.");
           // Update the topic in the state based on new data from the response
           setTopics((prevTopics) => prevTopics.map((t) => t.id === topic.id ? { ...t, ...resp?.topic } : t));
         }
+        else{
+          console.log("false response:", resp);
+          SwAlert.error();
+        }
+      })
+      .catch((error) => {
+        alert.close();
+        SwAlert.error();
       });
     }
   };

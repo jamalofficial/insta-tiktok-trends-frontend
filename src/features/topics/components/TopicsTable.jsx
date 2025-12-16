@@ -118,7 +118,8 @@ const TopicsTable = () => {
         }
         else{
           console.log("false response:", resp);
-          SwAlert.error();
+          if(resp?.message) SwAlert.error("Error", resp?.message);
+          else SwAlert.error();
         }
       })
       .catch((error) => {

@@ -52,6 +52,29 @@ const columns = [
     }
   },
   {
+    accessorKey: "is_processing",
+    header: "Run Status",
+    cell: ({ row }) => {
+        const status_val = row.getValue("is_processing");
+        if(status_val == "idle")
+          return <span class='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize bg-green-100 text-green-800'>
+            Idle
+            </span>;
+        else if(status_val == 'in_queue')
+          return <span class='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize bg-yellow-100 text-yellow-800'>
+            In Queue
+            </span>;
+        else if(status_val == 'error')
+          return <span class='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize bg-red-100 text-yellow-800'>
+            Error
+            </span>;
+        else
+          return <span class='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize bg-blue-100 text-blue-800'>
+            {status_val}
+            </span>;
+    }
+  },
+  {
     accessorKey: "created_at",
     header: ({ column, table }) => {
         const { actions } = table.options.meta;

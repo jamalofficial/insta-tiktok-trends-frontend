@@ -32,10 +32,10 @@ const columns = [
         const topic = row.original;
         return (
         <div className="text-sm font-medium text-gray-900 cursor-pointer"
-            onClick={() => actions.handleViewResults(topic)}
+          onClick={() => actions.handleViewResults(topic)}
         >
-            {row.getValue("topic")}
-            <span className="bg-indigo-400 font-normal ml-2 px-1 rounded text-white text-xs">{topic?.platform}</span>
+          {row.getValue("topic")}
+          <span className="bg-indigo-400 font-normal ml-2 px-1 rounded text-white text-xs">{topic?.platform}</span>
         </div>
         );
     }
@@ -105,33 +105,26 @@ const columns = [
         const { actions } = table.options.meta;
         return (
             <div className="flex gap-2 items-center whitespace-nowrap text-sm font-medium">
-                {/* <button
-                className=" text-green-600 hover:text-green-900 transition-colors duration-200 cursor-pointer"
-                title="Explore Topic"
-                onClick={() => handleScrapTopic(topic)}
-                >
-                <CompassIcon />
-                </button> */}
                 <button
-                className=" text-green-600 hover:text-green-900 transition-colors duration-200 cursor-pointer"
-                title="Explore Topic"
-                onClick={() => actions.handleExploreTopic(topic)}
+                  className=" text-green-600 hover:text-green-900 transition-colors duration-200 cursor-pointer"
+                  title="Explore Topic"
+                  onClick={() => actions.handleExploreTopic(topic)}
                 >
-                <TelescopeIcon />
+                  <TelescopeIcon />
                 </button>
                 <button
-                onClick={() => actions.handleViewResults(topic)}
-                className=" text-indigo-600 hover:text-indigo-900 transition-colors duration-200 cursor-pointer"
-                title="View Results"
+                  onClick={() => actions.handleViewResults(topic)}
+                  className=" text-indigo-600 hover:text-indigo-900 transition-colors duration-200 cursor-pointer"
+                  title="View Results"
                 >
-                <EyeIcon />
+                  <EyeIcon />
                 </button>
                 <button
-                onClick={() => actions.handleDeleteTopic(topic)}
-                className=" text-red-600 hover:text-red-900 transition-colors duration-200 cursor-pointer"
-                title="Delete"
+                  onClick={() => actions.handleDeleteTopic(topic)}
+                  className=" text-red-600 hover:text-red-900 transition-colors duration-200 cursor-pointer"
+                  title="Delete"
                 >
-                <Trash2Icon />
+                  <Trash2Icon />
                 </button>
             </div>
         );

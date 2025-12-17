@@ -83,14 +83,28 @@ const ResultsTable = ({
 
       const response = await topicService.getTopicResults(topicId, params);
 
-      setResults(response.items);
-      setPlatform(response.items ? response.items[0].platform : 'TikTok');
-      setPagination({
-        page: response.page,
-        size: response.size,
-        total: response.total,
-        pages: response.pages,
-      });
+      if(response?.items && response?.items?.length){
+        console.log("response", response);
+        setResults(response.items);
+        setPlatform(response.items ? response.items[0].platform : 'TikTok');
+        setPagination({
+          page: response.page,
+          size: response.size,
+          total: response.total,
+          pages: response.pages,
+        });
+      }
+      else{
+        console.log("no response", response);
+        setResults([]);
+        // setPlatform(response.items ? response.items[0].platform : 'TikTok');
+        setPagination({
+          page: response?.page ?? 1,
+          size: response?.size ?? 20,
+          total: response?.total ?? 0,
+          pages: response?.pages ?? 0,
+        });
+      }
     } catch (err) {
       setError("Failed to fetch results");
       console.error("Error fetching results:", err);

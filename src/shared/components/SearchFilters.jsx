@@ -88,7 +88,7 @@ export const SearchFilters = ({handleFiltersSubmit, filters, setFilterValues, is
                             options={platformValues}
                             value={filters?.platform}
                             selectionMode={'single'}
-                            onValueChange={(val) => setFilterValues(val, 'platform')}
+                            onValueChange={(val) => setFilterValues([val], 'platform')}
                         />
                     </div>
                 }

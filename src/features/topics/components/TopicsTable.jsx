@@ -143,12 +143,19 @@ const TopicsTable = () => {
         setError(null);
         topicService
           .deleteTopic(topic.id)
-          .then(() => {
-            setTopics((prevTopics) => prevTopics.filter((t) => t.id !== topic.id));
-            fetchTopicsInitial();
+          .then((resp) => {
+            if(resp?.status){
+              SwAlert.success("Success", resp?.message ?? "Topic deleted successfully.");
+              setTopics((prevTopics) => prevTopics.filter((t) => t.id !== topic.id));
+              fetchTopicsInitial();
+            }
+            else{
+              SwAlert.error("Not Deleted!", resp?.message ?? "Topic is not deleted. Please try again later.");
+            }
           })
           .catch((err) => {
-            setError("Failed to delete topic.");
+            SwAlert.error("Not Deleted!", err?.message ?? "Failed to delete topic.");
+            // setError("Failed to delete topic.");
             console.error("Delete topic error", err);
           })
           .finally(() => {

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { topicService } from "@/shared/services/topicService";
 import SkeletonLoader from "@/shared/components/SkeletonLoader";
-import LoadingSpinner from "@/shared/components/LoadingSpinner";
 import { Plus } from "lucide-react";
 import Modal from "@/shared/components/Modal";
 import TopicAddForm from "../pages/TopicAddForm";
@@ -10,6 +9,7 @@ import SwAlert from "@/shared/components/Swal";
 import SearchFilters from "@/shared/components/SearchFilters";
 import Pagination from "@/shared/components/Pagination";
 import { useDebounce } from "@/lib/helpers";
+import Button from "@/shared/components/button";
 
 import { columns } from './TopicsTableColumns';
 import { DataTable } from "@/shared/components/DataTable";
@@ -199,13 +199,13 @@ const TopicsTable = () => {
           <h3 className="text-lg leading-6 font-medium text-gray-900">
             Explore Topics
           </h3>
-          <button
-            className="flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed gap-2"
+          <Button
+            variant="accent-green"
             onClick={() => handleAddTopic(true)}
           >
-            <Plus className="inline-flex" />
+            <Plus/>
             Add Topic
-          </button>
+          </Button>
         </div>
 
         {/* Search and Filters */}
@@ -257,7 +257,7 @@ const TopicsTable = () => {
           title="Add Topic"
           className="bg-opacity-100"
         >
-          <TopicAddForm onSubmit={handleAddTopicSubmit} />
+          <TopicAddForm onSubmit={handleAddTopicSubmit} showHeading={false} />
         </Modal>
       )}
     </div>

@@ -19,7 +19,7 @@ const topicSchema = z.object({
     .nonempty("Platform is required"),
 });
 
-const TopicAddForm = ({ onSubmit, isLoading = false, error = null }) => {
+const TopicAddForm = ({ onSubmit, isLoading = false, error = null, showHeading = true }) => {
   const {
     register,
     handleSubmit,
@@ -52,9 +52,9 @@ const TopicAddForm = ({ onSubmit, isLoading = false, error = null }) => {
   return (
     <form
       onSubmit={handleSubmit(submitHandler)}
-      className="bg-white shadow rounded-lg p-6 max-w-md mx-auto"
+      className="bg-white mx-auto"
     >
-      <h2 className="text-xl font-semibold mb-4 text-gray-900">Add New Topic</h2>
+      {showHeading && <h2 className="text-xl font-semibold mb-4 text-gray-900">Add New Topic</h2> }
       <div className="mb-4">
         <label htmlFor="topic" className="block text-sm font-medium text-gray-700 mb-1">
           Topic Name

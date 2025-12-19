@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { categoryService } from "@/shared/services/categoryService";
 import SkeletonLoader from "@/shared/components/SkeletonLoader";
-import LoadingSpinner from "@/shared/components/LoadingSpinner";
 import Modal from "@/shared/components/Modal";
 import CategoryAddForm from "../pages/CategoryAddForm";
-import { Button } from "@/components/ui/button";
+import Button from "@/shared/components/button";
 import Swal from "@/shared/components/Swal";
+import { Plus } from "lucide-react";
 
 const CategoriesList = () => {
   const [categories, setCategories] = useState([]);
@@ -98,7 +98,10 @@ const CategoriesList = () => {
       <div className="px-4 py-5 sm:p-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-3">
           <h3 className="text-lg leading-6 font-medium text-gray-900">Categories</h3>
-          <Button onClick={handleAddCategory}>Add Category</Button>
+          <Button variant="accent-green" onClick={handleAddCategory}>
+            <Plus/>
+            Add Category
+          </Button>
         </div>
         <div className="flex mb-4">
           <input

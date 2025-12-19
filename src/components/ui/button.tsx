@@ -9,16 +9,44 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default:
+          "bg-primary text-primary-foreground hover:bg-primary/90",
+      
         destructive:
-          "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+          "bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500",
+      
+        success:
+          "bg-green-600 text-white hover:bg-green-700 focus:ring-2 focus:ring-green-500",
+      
+        warning:
+          "bg-yellow-500 text-black hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-400",
+      
+        info:
+          "bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500",
+      
         outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+      
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+      
         ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
-        link: "text-primary underline-offset-4 hover:underline",
+          "hover:bg-accent hover:text-accent-foreground",
+      
+        muted:
+          "bg-muted text-muted-foreground hover:bg-muted/80",
+      
+        link:
+          "text-primary underline-offset-4 hover:underline",
+      
+        inverse:
+          "bg-foreground text-background hover:bg-foreground/90",
+      
+        icon:
+          "h-9 w-9 p-0 inline-flex items-center justify-center rounded-md hover:bg-accent",
+      
+        disabled:
+          "bg-muted text-muted-foreground opacity-50 cursor-not-allowed pointer-events-none",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

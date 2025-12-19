@@ -54,7 +54,7 @@ const Modal = ({
 
         {/* Modal */}
         <div
-          className={`relative w-full ${sizeClasses[size]} transform rounded-lg bg-white shadow-xl transition-all ${className}`}
+          className={`relative w-full ${sizeClasses[size]} transform rounded-sm bg-white shadow-xl transition-all ${className}`}
         >
           {/* Header */}
           {(title || showCloseButton) && (

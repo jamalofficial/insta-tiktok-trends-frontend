@@ -2,8 +2,22 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import {renderToString} from "react-dom/server";
 import LoadingSpinner from '@/shared/components/LoadingSpinner';
+import {
+  buttonBaseClasses,
+  buttonVariants,
+  buttonSizes,
+} from "@/shared/components/button";
 
-const MySwal = withReactContent(Swal);
+// const MySwal = withReactContent(Swal);
+const MySwal = withReactContent(
+  Swal.mixin({
+    buttonsStyling: false,
+    // backdrop: `
+    //   rgba(0, 0, 0, 0.4)
+    //   linear-gradient(90deg, rgba(147,51,234,0.7), rgba(79,70,229,0.7))
+    // `,
+  })
+);
 
 /**
  * A reusable component that can show SweetAlert2 dialogs for success, error, and confirmation.
@@ -40,6 +54,9 @@ const SwAlert = {
         // }
       },
       loaderHtml: renderToString(<LoadingSpinner size="64px" className={"min-h-[70px]"}/>), //"<div id='swal-custom-loader'></div>",
+      customClass: {
+        confirmButton: `${buttonBaseClasses} ${buttonVariants.primary} ${buttonSizes.medium}`,
+      },
       ...options
     });
   },
@@ -52,7 +69,10 @@ const SwAlert = {
     return MySwal.fire({
       title: <strong>{title}</strong>,
       html: <i>{message}</i>,
-      icon: 'success'
+      icon: 'success',
+      customClass: {
+        confirmButton: `${buttonBaseClasses} ${buttonVariants["accent-purple"]} ${buttonSizes.medium}`,
+      },
     });
   },
 
@@ -65,7 +85,10 @@ const SwAlert = {
     return MySwal.fire({
       title: <strong>{title}</strong>,
       html: <i>{message}</i>,
-      icon: 'error'
+      icon: 'error',
+      customClass: {
+        confirmButton: `${buttonBaseClasses} ${buttonVariants.danger} ${buttonSizes.medium}`,
+      },
     });
   },
 
@@ -88,6 +111,10 @@ const SwAlert = {
       showCancelButton: true,
       confirmButtonText: "Yes",
       cancelButtonText: "Cancel",
+      customClass: {
+        confirmButton: `${buttonBaseClasses} ${buttonVariants["danger"]} ${buttonSizes.medium} mx-1`,
+        cancelButton: `${buttonBaseClasses} ${buttonVariants["accent-purple"]} ${buttonSizes.medium} mx-1`,
+      },
       ...options
     });
   },

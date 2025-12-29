@@ -10,12 +10,14 @@ export const VISIBILITY_OPTIONS = {
     DEMOGRAPHIC: 'demographic',
     REGION: 'region',
     PLATFORM: 'platform',
+    CATEGORY: 'category',
 }
 
 export const SearchFilters = ({handleFiltersSubmit, filters, setFilterValues, isLoading=false, error='', visibleOptions = Object.values(VISIBILITY_OPTIONS)}) => {
     const [demographicValues, setDemographicValues] = useState([]);
     const [regionValues, setRegionValues] = useState([]);
     const [platformValues, setPlatformValues] = useState([]);
+    const [categoriesValues, setCategoriesValues] = useState([]);
 
     const submitFilters = (e) => {
         e.preventDefault();
@@ -33,6 +35,9 @@ export const SearchFilters = ({handleFiltersSubmit, filters, setFilterValues, is
             const pf_response = await listService.platforms();
             const pf_items = pf_response?.items?.map((item) => ({label: item, value: item}));
             setPlatformValues(pf_items);
+            const cat_response = await listService.categories();
+            const cat_items = cat_response?.items?.map((item) => ({label: item, value: item}));
+            setCategoriesValues(cat_items);
         } catch (err) {
             console.error("Error fetching filters:", err);
         }
@@ -89,6 +94,17 @@ export const SearchFilters = ({handleFiltersSubmit, filters, setFilterValues, is
                             value={filters?.platform}
                             selectionMode={'single'}
                             onValueChange={(val) => setFilterValues([val], 'platform')}
+                        />
+                    </div>
+                }
+                {visibleOptions.includes(VISIBILITY_OPTIONS.CATEGORY) &&
+                    <div className="">
+                        <MultiSelect 
+                            // label="Region"
+                            placeholder="Select categories"
+                            options={categoriesValues}
+                            value={filters?.category}
+                            onValueChange={(val) => setFilterValues(val, 'category')}
                         />
                     </div>
                 }

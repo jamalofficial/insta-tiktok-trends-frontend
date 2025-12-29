@@ -45,7 +45,8 @@ const TopKeywordsTable = () => {
     sort_order: null,
     demographic: [], 
     region: [],
-    platform: null
+    platform: null,
+    category: [],
   });
 
   const handlePageChange = (newPage) => {
@@ -67,6 +68,7 @@ const TopKeywordsTable = () => {
           demographic: filters.demographic,
           region: filters.region,
           platform: filters.platform,
+          category: filters.category,
         },
       };
 

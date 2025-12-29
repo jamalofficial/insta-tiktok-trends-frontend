@@ -50,6 +50,7 @@ const ResultsTable = ({
     sort_order: null,
     demographic: [], 
     region: [],
+    category: [],
   });
 
   const handlePageChange = (newPage) => {
@@ -70,9 +71,10 @@ const ResultsTable = ({
         filters: {
           demographic: filters.demographic,
           region: filters.region,
+          category: filters?.category,
         },
       };
-      console.log("filters", filters, params);
+      // console.log("filters", filters, params);
 
       // Remove empty string values
       Object.keys(params).forEach((key) => {

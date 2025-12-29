@@ -37,6 +37,7 @@ const TopicsTable = () => {
     demographic: [], 
     region: [],
     platform: null,
+    category: [],
   });
 
   // Only fetch topics on initial load and when pagination or sort changes (not when search changes)
@@ -57,6 +58,7 @@ const TopicsTable = () => {
           demographic: filters?.demographic,
           region: filters?.region,
           platform: filters?.platform,
+          category: filters?.category,
         },
         // Don't include search in initial fetch
       });

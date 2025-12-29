@@ -45,7 +45,9 @@ const columns = [
                 }}
               >
                 {row.getValue("relevant_keyword")}
+                <span className="bg-indigo-400 font-normal px-1 rounded text-white text-xs hidden">{result?.platform}</span>
                 {/* {detailsView?.id == result?.id ? "Hide Details" : "Show Details"} */}
+                {/* <span className="bg-indigo-400 font-normal ml-2 px-1 rounded text-white text-xs">{result?.category?.name}</span> */}
               {/* </button> */}
           </div>
         );
@@ -101,6 +103,19 @@ const columns = [
         return (
           <div className="text-sm text-gray-900">
             {formatPercentage(row.getValue('search_increase'))}
+          </div>
+        );
+    }
+  },
+  {
+    accessorKey: "catgory",
+    header: "Category",
+    cell: ({row}) => {
+        const result = row.original;
+        // const { actions } = table.options.meta;
+        return (
+          <div className="flex gap-2 items-center justify-start whitespace-nowrap text-sm font-medium cursor-pointer">
+                {result?.category?.name}
           </div>
         );
     }

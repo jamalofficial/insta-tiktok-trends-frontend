@@ -107,6 +107,19 @@ const columns = [
     }
   },
   {
+    accessorKey: "catgory",
+    header: "Category",
+    cell: ({row}) => {
+        const result = row.original;
+        // const { actions } = table.options.meta;
+        return (
+          <div className="flex gap-2 items-center justify-start whitespace-nowrap text-sm font-medium cursor-pointer">
+                {result?.category?.name}
+          </div>
+        );
+    }
+  },
+  {
     accessorKey: "updated_at",
     header: "Last Update",
     cell: ({ row }) => {

@@ -14,6 +14,10 @@ export class ListService {
     async platforms() {
         return await apiService.get(`/lists/platforms`);
     }
+    // Get categories list
+    async categories() {
+        return await apiService.get(`/lists/categories`);
+    }
 }
 
 export const listService = new ListService();
